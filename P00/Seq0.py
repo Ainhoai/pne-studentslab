@@ -20,6 +20,7 @@ def seq_count_base(seq, base):
     base = len(body)
     return base
 
+
 def seq_count(seq):
     k
 def seq_reverse(seq, n):
