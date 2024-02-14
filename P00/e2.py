@@ -1,6 +1,6 @@
+import os
 from Seq0 import *
-folder = "../sequences/"
-filename = "U5.txt"
-print("DNA file : ", filename)
-body = seq_read_fasta(folder + filename)
-print("The first 20 bases are:", body[0:20])
+num = 20
+dna_file = input("DNA file: ")
+body = seq_read_fasta(os.path.join("..", "sequence", dna_file))
+print("The first 20 bases are:", body[:num])
