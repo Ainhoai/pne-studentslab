@@ -1,10 +1,11 @@
 import os
 from Seq0 import *
-genes = ["ADA", "FXN", "U5", "FRAT1"]
-bases = ["A","G", "C", "T"]
-for g in genes:
-    filename = os.path.join("..", "sequences",  g + ".txt")
+genes = ["ADA.txt", "FXN.txt", "U5.txt", "FRAT1.txt"]
+bases = ["A", "G", "C", "T"]
+for gene in genes:
+    filename = os.path.join("..", "sequences",  gene)
     dna_sequence = seq_read_fasta(filename)
-    print(dna_sequence)
+    print(f"Gene {gene}:")
     for base in bases:
-        print(base)
+        print(f"{base}: {seq_count_base(dna_sequence, base)}")
+#preguntar a ver porque sale que todas las bases son cero.

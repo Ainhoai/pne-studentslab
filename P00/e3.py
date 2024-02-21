@@ -1,8 +1,8 @@
 import os
 from Seq0 import *
 
-genes = ["ADA", "FXN", "U5", "FRAT1"]
-for g in genes:
-    filename = os.path.join("..", "sequence",  g + ".txt")
+genes = ["ADA.txt", "FXN.txt", "U5.txt", "FRAT1.txt"]
+for gene in genes:
+    filename = os.path.join("..", "sequences", gene)
     dna_sequence = seq_read_fasta(filename)
-    print(dna_sequence)
+    print(f"Gene {gene} -> Length: {seq_len(dna_sequence)}")

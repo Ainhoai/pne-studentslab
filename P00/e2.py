@@ -1,6 +1,7 @@
 import os
 from Seq0 import *
-num = 20
+N = 20
 dna_file = input("DNA file: ")
-body = seq_read_fasta(os.path.join("..", "sequence", dna_file))
-print("The first 20 bases are:", body[:num])
+dna_sequence = seq_read_fasta(os.path.join("..", "sequences", dna_file))
+print(f"The first {N} bases are:")
+print(dna_sequence[:N])
