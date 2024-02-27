@@ -7,8 +7,11 @@ print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
 
 s = Seq()
-
-filename = ["U5.txt"]
-dna_sequence = read_fasta("..", "sequences", filename)
-s.read_fasta(filename)
-
+FILENAME = ["U5.txt"]
+print("Null sequence created.")
+for i, s in enumerate(FILENAME):
+    print(f"Sequence {i + 1}: (length: {s.len()}) {s}")
+    print(f"\tBases: {s.count()}")
+    print(f"\tRev: {s.reverse()}")
+    print(f"\tComp: {s.complement()}")
+s.read_fasta(FILENAME)
