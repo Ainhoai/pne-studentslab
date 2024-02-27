@@ -1,8 +1,17 @@
 class Seq:
     """ A class to represent  sequences """
+
     def __init__(self, strbases):
-        self.strbases = strbases
-        print("New sequences created!")
+        ok = True
+        for b in strbases:
+            if b not in Seq.BASES:
+                ok = False
+                self.strbases = "ERROR!"
+                print("Incorrect sequence detected.")
+                break
+        if ok:
+            self.strbases = strbases
+            print("A new sequence is created!")
 
     def __str__(self):
         return self.strbases
@@ -28,16 +37,6 @@ class Gene(Seq):
 
 
 
-s1 = Seq("AGTACACTGGT")
-s2 = Seq("CGTAAC")
-g = Gene("CGTAAC", "FRAT1")
-
-
-print(f"Sequence 1: {s1}")
-print(f"  Length: {s1.len()}")
-print(f"Sequence 2: {s2}")
-print(f"  Length: {s2.len()}")
-print(f"Gene: {g}")
 
 
 

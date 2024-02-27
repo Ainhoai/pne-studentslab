@@ -1,22 +1,9 @@
-class Seq:
-    """ A class to represent  sequences """
+from seq import Seq
 
-    def __init__(self, strbases):
-        bases = ["A", "G", "C", "T"]
-        for b in strbases:
-            if b not in bases:
-                self.strbases = "ERROR!"
-                print("Incorrect sequence detected.")
-                return
-
-        self.strbases = strbases
-        print("A new sequence is created!")
+seq_list = [Seq("ACT"), Seq("GATA"), Seq("CAGATA")]
+for s in seq_list:
+    print(f"Sequence {seq_list.index(s)}: (Length: {s.len()}) {s}")
 
 
-    def __str__(self):
-        return self.strbases
 
-
-    def seq_list(self, seq_list):
-        seq_list = [Seq("ACT"), Seq("GATA"), Seq("CAGATA")]
 
