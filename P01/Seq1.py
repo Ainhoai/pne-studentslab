@@ -22,8 +22,14 @@ class Seq:
         return self.strbases
 
     def len(self):
+        if self.strbases is "NULL" or self.strbases is "ERROR!":
+            return 0
         return len(self.strbases)
 
+    def count_bases(self, base):
+        if self.strbases is "NULL" or self.strbases is "ERROR!":
+            return 0
+        return self.strbases.count(base)
 
 class Gene(Seq):
     """This class is derived from the Seq Class
