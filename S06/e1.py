@@ -1,10 +1,9 @@
 class Seq:
     """ A class to represent  sequences """
-
+    BASES = ["A", "G", "C", "T"]
     def __init__(self, strbases):
-        bases = ["A", "G", "C", "T"]
         for b in strbases:
-            if b not in bases:
+            if b not in BASES:
                 self.strbases = "ERROR!"
                 print("Incorrect sequence detected.")
                 return
