@@ -31,6 +31,12 @@ class Seq:
             return 0
         return self.strbases.count(base)
 
+    def count(self):
+        base_appearances = {}
+        for base in Seq.BASES:
+            base_appearances[base] = self.count_bases(base)
+        return base_appearances
+
 class Gene(Seq):
     """This class is derived from the Seq Class
            All the objects of class Gene will inherit
