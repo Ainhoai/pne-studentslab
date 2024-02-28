@@ -9,7 +9,7 @@ class Client:
         print("Ok!")
 
 
-    def __str__(self, msg):
+    def __str__(self):
 
         return f"Connection to SERVER at {self.IP}, PORT: {self.PORT}"
 
