@@ -2,7 +2,7 @@ import socket  #(module)
 
 # Configure the Server's IP and PORT
 PORT = 8081
-IP = "127.0.0.1"  # it depends on the machine the server is running
+IP = "212.128.255.98"  # it depends on the machine the server is running
 
 MAX_OPEN_REQUESTS = 5
 
