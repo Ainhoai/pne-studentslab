@@ -2,7 +2,7 @@ import socket  #(module)
 
 # Configure the Server's IP and PORT
 PORT = 8081
-IP = ""  # it depends on the machine the server is running
+IP = "127.0.0.1"  # it depends on the machine the server is running
 
 MAX_OPEN_REQUESTS = 5
 
@@ -22,17 +22,17 @@ try:
         print(f"Waiting for connections at {IP}, {PORT} ")
         (clientsocket, address) = serversocket.accept()
 
-        # Another connection!e
+        # Another connection!
         number_con += 1
 
         # Print the connection number
-        print(f"CONNECTION: {number_con}. From the IP: {address}")
+        print(f"CONNECTION: {number_con}. From the address: {address}")
 
         # Read the message from the client, if any
         msg = clientsocket.recv(2048).decode("utf-8")
         print(f"Message from client: {msg}")
 
-        # Send the message
+        # Send the message, no correspondence to client 1.
         message = "Hello from the teacher's server\n"
         send_bytes = str.encode(message)
         # We must write bytes, not a string

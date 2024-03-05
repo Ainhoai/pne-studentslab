@@ -1,7 +1,7 @@
 import socket
 
 SERVER_PORT = 8081
-SERVER_IP = ""
+SERVER_IP = "127.0.0.1"
 
 clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
