@@ -17,8 +17,8 @@ ip_2 = ""
 port_2 = 2025
 
 
-c = Client(ip_1, port_1)
-l = Client(ip_2, port_2)
+c1 = Client(ip_1, port_1)
+c2 = Client(ip_2, port_2)
 
 filename = os.path.join("..", "sequences", Gene)
 s = Seq()
@@ -33,9 +33,9 @@ for g in range(NUMBER_OF_FRAGMENTS):
     print(f"Fragment {g + 1}: {fragment} ")
 
 if g / 2 == 0:
-    response = c.talk(gene_sequence)
+    response = c1.talk(gene_sequence)
 elif g / 2 != 0:
-    response = l.talk(gene_sequence)
+    response = c2.talk(gene_sequence)
 
 
 
