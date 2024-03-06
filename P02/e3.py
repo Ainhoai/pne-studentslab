@@ -5,7 +5,7 @@ EXERCISE = 3
 
 print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
-IP = "212.128.255.98"
+IP = "192.168.0.33" #servidor laptop dulce
 PORT = 8081
 
 c = Client(IP, PORT)

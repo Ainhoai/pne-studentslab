@@ -1,34 +1,26 @@
-import socket
-
-
 class Client:
-    def __init__(self, IP, PORT):
-        self.IP = IP
-        self.PORT = PORT
+    def __init__(self, server_ip: str, server_port: int):
+        self.server_ip = server_ip
+        self.server_port = server_port
+
+    def __str__(self):
+        return f"Connection to SERVER at {self.server_ip}, PORT: {self.server_port}"
+
 
     def ping(self):
         print("Ok!")
 
-    def __str__(self):
-
-        return f"Connection to SERVER at {self.IP}, PORT: {self.PORT}"
 
     def talk(self, msg):
-        # -- Create the socket
-        clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        import socket
 
-        # establish the connection to the Server (IP, PORT)
-        clientsocket.connect((self.IP, self.PORT))
-
-        # Send data.
-        clientsocket.send(str.encode(msg))
-
-        # Receive data
-        response = clientsocket.recv(2048).decode("utf-8")
-
-        # Close the socket
-        clientsocket.close()
-
-        # Return the response
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((self.server_ip, self.server_port))
+        msg_bytes = str.encode(msg)
+        client_socket.send(msg_bytes)
+        response_bytes = client_socket.recv(2048)
+        response = response_bytes.decode("utf-8")
+        client_socket.close()
         return response
+
 
