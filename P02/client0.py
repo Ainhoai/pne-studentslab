@@ -13,7 +13,6 @@ class Client:
 
     def talk(self, msg):
         import socket
-
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((self.server_ip, self.server_port))
         msg_bytes = str.encode(msg)
