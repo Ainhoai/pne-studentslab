@@ -11,9 +11,9 @@ NUMBER_OF_FRAGMENTS = 10
 
 print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
-ip_1 = "255.255.224.0"
+ip_1 = ""
 port_1 = 2024
-ip_2 = "255.255.224.0"
+ip_2 = ""
 port_2 = 2025
 
 
@@ -32,10 +32,10 @@ for g in range(NUMBER_OF_FRAGMENTS):
     fragment = gene_sequence[start_index: end_index]
     print(f"Fragment {g + 1}: {fragment} ")
 
-    if g / 2 == 0:
-        response = c.talk(gene_sequence)
-    elif g / 2 != 0:
-        response = l.talk(gene_sequence)
+if g / 2 == 0:
+    response = c.talk(gene_sequence)
+elif g / 2 != 0:
+    response = l.talk(gene_sequence)
 
 
 
