@@ -17,3 +17,14 @@ for g in Genes:
     filename = os.path.join("..", "sequences", g)
     s = Seq()
     s.read_fasta(filename)
+
+    msg = f"Sending {g} Gene to the server..."
+    print(f"To server: {msg}")
+    response = c.talk(msg)
+    print(f"From server: {response}")
+
+
+    msg = str(s)
+    print(f"To server: {msg}")
+    response = c.talk(msg)
+    print(f"From server: {response}")
