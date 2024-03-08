@@ -1,5 +1,5 @@
 import socket
-import termcolor
+import termcolor #no me deja instalarmelo en el portatil.
 
 IP = "127.0.0.1"
 PORT = 8080
