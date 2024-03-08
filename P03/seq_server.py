@@ -40,7 +40,7 @@ try:
             response = str(s)
 
         print(response)
-        response_bytes = response.encode()
+        response_bytes = response.encode("utf-8")
         client_socket.send(response_bytes)
 
 
