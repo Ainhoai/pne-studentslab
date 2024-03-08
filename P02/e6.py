@@ -1,42 +1,38 @@
 from client0 import Client
 from Seq1 import Seq
 import os
-import socket
 
 PRACTICE = 2
-EXERCISE = 5
+EXERCISE = 6
 Gene = "FRAT1.txt"
 NUMBER_OF_FRAGMENTS = 10
+NUMBER_OF_BASES = 10
 
 
 print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
-ip_1 = ""
-port_1 = 2024
-ip_2 = ""
-port_2 = 2025
+IP = "127.0.0.1"
+PORT = 8081
 
-
-c1 = Client(ip_1, port_1)
-c2 = Client(ip_2, port_2)
+c = Client(IP, PORT)
 
 filename = os.path.join("..", "sequences", Gene)
+
 s = Seq()
 s.read_fasta(filename)
 print(f"Gene {Gene},  {s}")
-gene_sequence = str(s)
+c.talk(f"Sending {Gene} gene to the server, in fragments of {NUMBER_OF_BASES} bases...")
 
 for g in range(NUMBER_OF_FRAGMENTS):
-    start_index = g * 10
-    end_index = start_index + 10
-    fragment = gene_sequence[start_index: end_index]
-    print(f"Fragment {g + 1}: {fragment} ")
+    start = 0
+    end = NUMBER_OF_BASES
+    fragments = str(s)[start:end]
+    msg = f"Fragment {g + 1}: {fragments}"
+    print(msg)
+    c.talk(msg)
 
-if g / 2 == 0:
-    response = c1.talk(gene_sequence)
-elif g / 2 != 0:
-    response = c2.talk(gene_sequence)
-
+    start += NUMBER_OF_BASES
+    end += NUMBER_OF_BASES
 
 
 

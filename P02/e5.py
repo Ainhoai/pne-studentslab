@@ -30,6 +30,7 @@ for g in range(NUMBER_OF_FRAGMENTS):
     msg = f"Fragment {g + 1}: {fragments} "
     print(msg)
     c.talk(msg)
+
     start += NUMBER_OF_BASES
     end += NUMBER_OF_BASES
 
