@@ -26,6 +26,7 @@ try:
         response = None
         slices = request.split(" ")
         command = slices[0]
+        print(command)
 
         if command == "PING":
             response = "Ok!\n"
