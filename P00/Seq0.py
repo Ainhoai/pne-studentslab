@@ -8,9 +8,9 @@ def seq_ping():
     print("OK")
 
 
-def seq_read_fasta(filename):
+def seq_read_fasta(filename):  #ller la sequencia
     file_content = Path(filename).read_text()
-    lines = file_content.splitlines()
+    lines = file_content.splitlines()  #divide el contenido en lineas
     body = lines[1:]
     "".join(body)
     return body

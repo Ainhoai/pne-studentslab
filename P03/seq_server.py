@@ -9,7 +9,7 @@ SEQUENCES = ["ADA", "FRAT1", "FXN", "RNU6_269P", "U5"]
 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #para por si esta un port ocupado o habia sido ocupado antes que no de problema; es opcional.
 try:
     server_socket.bind((IP, PORT))
     server_socket.listen()
