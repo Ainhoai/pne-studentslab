@@ -21,6 +21,8 @@ for n in range(N): #N: constante creada previamente; n: index.
     response = c.talk(f"GET {n}")
     print(f"GET {n}: {response}")
 
+    print()
+
 print(f"* Testing INFO...")
 print(f"INFO {SEQUENCE}")
 response = c.talk(f"INFO {SEQUENCE}")
@@ -31,16 +33,22 @@ print(f"COMP {SEQUENCE}")
 response = c.talk(f"COMP {SEQUENCE}")
 print(response)
 
+print()
+
 print(f"* Testing REV...")
 print(f"REV {SEQUENCE}")
 response = c.talk(f"REV {SEQUENCE}")
 print(response)
+
+print()
 
 print(f"* Testing GENE...")
 for g in GENES:
     print(f"GENE {g}")
     response = c.talk(f"GENE {g}")
     print(response)
+
+    print()
 
 
 
