@@ -35,7 +35,7 @@ try:
             n = int(slices[1]) #para luego poder indexarla en genes.
             genes = SEQUENCES[n]
             s = Seq()
-            filename = os.path.join("..", "sequences", genes + ".txt")
+            filename = os.path.join("..", "sequences", genes + ".txt")  #esto lo pongo solo pq estoy usando las sequencias de una carpeta que estan predefinidas. Podria hacerlo con una lista de sequencias creada directamente en este codigo.
             s.read_fasta(filename)
             response = str(s)
 
