@@ -19,7 +19,7 @@ print(response)
 print(f"* Testing GET...")
 for n in range(N): #N: constante creada previamente; n: index.
     response = c.talk(f"GET {n}")
-    print(f"GET: {response}")
+    print(f"GET {n}: {response}")
 
 print(f"* Testing INFO...")
 print(f"INFO {SEQUENCE}")
@@ -38,8 +38,8 @@ print(response)
 
 print(f"* Testing GENE...")
 for g in GENES:
-    print(f"GENE {GENES}")
-    response = c.talk(f"GENE {GENES}")
+    print(f"GENE {g}")
+    response = c.talk(f"GENE {g}")
     print(response)
 
 
