@@ -3,6 +3,7 @@ import random
 class Numberguesser:
 
     ATTEMPTS = 0
+    player_number = int(input(f"Please enter a valid number between 0-100:"))
     secret_number = random.randint(1, 100)
 
     def __init__(self, secret_number, attempts):
