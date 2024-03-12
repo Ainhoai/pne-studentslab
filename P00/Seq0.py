@@ -1,19 +1,22 @@
 from pathlib import Path
 
-bases = ["A", "C", "T", "G"]
-bases_complement = {"A": "T", "T": "A", "C": "G", "G": "C"}
+BASES = ["A", "C", "T", "G"]
+BASES_COMPLEMENT = {"A": "T", "T": "A", "C": "G", "G": "C"}
 
 
 def seq_ping():
     print("OK")
 
 
-def seq_read_fasta(filename):  #leer la sequencia
+def seq_read_fasta(filename):
     file_content = Path(filename).read_text()
-    lines = file_content.splitlines()  #divide el contenido en lineas
+    lines = file_content.splitlines()
     body = lines[1:]
-    "".join(body)
-    return body
+    # "".join(body) is the same as the following for loop
+    dna_sequence = ""
+    for line in body:
+        dna_sequence += line  # dna_sequence = dna_sequence + line
+    return dna_sequence
 
 
 def seq_len(seq):
@@ -25,20 +28,19 @@ def seq_count_base(seq, base):
 
 
 def seq_count(seq):
-    base_appearances = {}
-    for base in bases:
-        base_appearances[base] = seq_count_base(seq, base)
-    return base_appearances
+    bases_appearances = {}
+    for base in BASES:
+        bases_appearances[base] = seq_count_base(seq, base)
+    return bases_appearances
 
 
 def seq_reverse(seq, n):
-    new_seq = seq[:n]
-    return new_seq[::-1]
+    seq_n = seq[:n]
+    return seq_n[::-1]
 
 
 def seq_complement(seq):
     complement = ""
     for base in seq:
-        complement += bases_complement[base]
+        complement += BASES_COMPLEMENT[base]
     return complement
-

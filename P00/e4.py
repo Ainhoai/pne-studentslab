@@ -8,4 +8,3 @@ for gene in genes:
     print(f"Gene {gene}:")
     for base in bases:
         print(f"{base}: {seq_count_base(dna_sequence, base)}")
-#preguntar a ver porque sale que todas las bases son cero.
