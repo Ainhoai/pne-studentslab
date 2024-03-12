@@ -61,6 +61,7 @@ try:
 
 
         print(response)
+
         response_bytes = response.encode("utf-8")
         client_socket.send(response_bytes)
         client_socket.close()
