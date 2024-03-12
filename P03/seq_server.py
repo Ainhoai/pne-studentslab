@@ -5,7 +5,7 @@ from Seq1 import Seq
 
 IP = "127.0.0.1"
 PORT = 8080
-SEQUENCES = ["ADA", "FRAT1", "FXN", "RNU6_269P", "U5"]
+SEQUENCES = ["AACCGTA", "AAATA", "GGCCTT", "ACGTCATG", "ACAGACATAGACA"]
 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,18 +33,31 @@ try:
 
         elif command == "GET":
             n = int(slices[1]) #para luego poder indexarla en genes.
-            genes = SEQUENCES[n]
-            s = Seq()
-            filename = os.path.join("..", "sequences", genes + ".txt")  #esto lo pongo solo pq estoy usando las sequencias de una carpeta que estan predefinidas. Podria hacerlo con una lista de sequencias creada directamente en este codigo.
-            s.read_fasta(filename)
+            bases = SEQUENCES[n]
+            s = Seq(bases)
             response = str(s)
+
         elif command == "INFO":
             bases = slices[1] #me guardo la sequencia. Posicion 0 es el comando "INFO".
             s = Seq(bases)
             response = s.info()
 
         elif command == "COMP":
-            pass
+            bases = slices[1]
+            s = Seq(bases)
+            response = s.complement()
+
+        elif command == "REV":
+            bases = slices[1]
+            s = Seq(bases)
+            response = s.reverse()
+
+        elif command == "GENE":
+            genes = slices[1]
+            s = Seq()
+            filename = os.path.join("..", "sequences", genes + ".txt")
+            s.read_fasta(filename)
+            response = str(s)
 
         print(response)
         response_bytes = response.encode("utf-8")

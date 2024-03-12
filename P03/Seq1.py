@@ -89,9 +89,10 @@ class Seq:
                 percentage = 0
             else:
                 percentage = (count * 100) / self.len()
-                percentage = round(percentage, 2)
-            s += f"{base}: {count} ({percentage}) %\n"
+                #percentage = round(percentage, 2)
+            s += f"{base}: {count} ({percentage:.1f}) %\n"
         return s
+
 
 
 
