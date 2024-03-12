@@ -4,6 +4,7 @@ from pathlib import Path
 class Seq:
     """ A class to represent  sequences """
     BASES = ["A", "G", "C", "T"]
+    VALUES = {"A": 3, "T": -1, "C": 2, "G": 7}
 
     def __init__(self, strbases= None):
         if strbases is None or len(strbases) == 0:
@@ -95,8 +96,6 @@ class Seq:
 
 
 
-
-
 class Gene(Seq):
     """This class is derived from the Seq Class
            All the objects of class Gene will inherit
@@ -106,7 +105,6 @@ class Gene(Seq):
         super().__init__(strbases)
         self.name = name
         print("New Gene created")
-
 
 
     def __str__(self):
