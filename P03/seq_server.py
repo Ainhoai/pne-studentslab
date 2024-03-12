@@ -16,16 +16,16 @@ try:
 
     print("SEQ Server configure.")
 
-    while True:
+    while True:  #aceptando all el rato conexiones de clientes.
         print(f"Waiting for clients ({IP}:{PORT})...")
         (client_socket, client_address) = server_socket.accept()
 
-        request_bytes = client_socket.recv(2048)
+        request_bytes = client_socket.recv(2048) #cadena de caracteres con la peticion del cliente.
         request = request_bytes.decode("utf-8")
 
         response = None
         slices = request.split(" ")
-        command = slices[0]
+        command = slices[0] #lista con la posicion 0 los comandos (PING; INFO; GET; etc) y en la uno la lista (AAGTTAG; etc). Aqui puedo poner .uppercase y asi cogeria el comando en minuscula tambien.
         print(command)
 
         if command == "PING":
@@ -38,12 +38,17 @@ try:
             filename = os.path.join("..", "sequences", genes + ".txt")  #esto lo pongo solo pq estoy usando las sequencias de una carpeta que estan predefinidas. Podria hacerlo con una lista de sequencias creada directamente en este codigo.
             s.read_fasta(filename)
             response = str(s)
+        elif command == "INFO":
+            bases = slices[1] #me guardo la sequencia. Posicion 0 es el comando "INFO".
+            s = Seq(bases)
+            response = s.info()
+
+        elif command == "COMP":
+            pass
 
         print(response)
         response_bytes = response.encode("utf-8")
         client_socket.send(response_bytes)
-
-
         client_socket.close()
 
 except socket.error:

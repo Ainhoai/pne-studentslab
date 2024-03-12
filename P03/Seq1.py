@@ -25,12 +25,12 @@ class Seq:
         return self.strbases
 
     def len(self):
-        if self.strbases is "NULL" or self.strbases is "ERROR!":
+        if self.strbases == "NULL" or self.strbases == "ERROR!":
             return 0
         return len(self.strbases)
 
     def count_bases(self, base):
-        if self.strbases is "NULL" or self.strbases is "ERROR!":
+        if self.strbases == "NULL" or self.strbases == "ERROR!":
             return 0
         return self.strbases.count(base)
 
@@ -41,20 +41,20 @@ class Seq:
         return base_appearances
 
     def reverse(self):
-        if self.strbases is "NULL":
+        if self.strbases == "NULL":
             return "NULL"
 
-        elif self.strbases is "ERROR!":
+        elif self.strbases == "ERROR!":
             return "ERROR!"
         else:
             new_seq = self.strbases[:]
             return new_seq[::-1]
 
     def complement(self):
-        if self.strbases is "NULL":
+        if self.strbases == "NULL":
             return "NULL"
 
-        elif self.strbases is "ERROR!":
+        elif self.strbases == "ERROR!":
             return "ERROR!"
         else:
             bases_complement = {"A": "T", "T": "A", "C": "G", "G": "C"}
@@ -80,6 +80,21 @@ class Seq:
         most_frequent_base = max(bases_dict, key=bases_dict.get)
 
         return most_frequent_base
+
+    def info(self):
+        s = f"Sequence: {self.strbases}\n"
+        s += f"Total length: {self.len()}\n"
+        for base, count in self.count().items(): #me devuelve en cada vuelta una pareja ("A: 3"; p.ej)
+            if self.strbases == "NULL" or self.strbases == "ERROR!":
+                percentage = 0
+            else:
+                percentage = (count * 100) / self.len()
+                percentage = round(percentage, 2)
+            s += f"{base}: {count} ({percentage}) %\n"
+        return s
+
+
+
 
 class Gene(Seq):
     """This class is derived from the Seq Class
