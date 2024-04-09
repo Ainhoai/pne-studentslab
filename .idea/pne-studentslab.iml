@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/P00" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/P01" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/P02" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/P03" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/P04" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/P05" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/P06" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/P07" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/S01" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/S02" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/S03" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/S04" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/S06" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/S07" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/S08" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/S10" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/S12" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/S14" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
