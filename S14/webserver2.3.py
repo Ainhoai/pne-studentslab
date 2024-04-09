@@ -33,7 +33,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         # Define the content-type header:
         self.send_header('Content-Type', 'text/plain')
-        self.send_header('Content-Length', len(contents.encode()))
+        self.send_header('Content-Length', str(len(contents.encode())))
 
         # The header is finished
         self.end_headers()
