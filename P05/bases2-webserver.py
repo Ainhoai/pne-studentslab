@@ -1,5 +1,6 @@
 import http.server
 import socketserver
+import termcolor
 from pathlib import Path
 import os
 
@@ -10,7 +11,7 @@ socketserver.TCPServer.allow_reuse_address = True
 
 class Myhandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
-        print(self.requestline)
+        termcolor.cprint(self.requestline, "green")
 
         resource = self.path
         if resource == "/" or self.path == "/index.html":
