@@ -12,7 +12,7 @@ handler = http.server.SimpleHTTPRequestHandler
 # -- Open the socket server
 with socketserver.TCPServer(("", PORT), handler) as httpd:
 
-    print("Serving at PORT", PORT)
+    print(f"Serving at PORT {PORT}")
 
     # -- Main loop: Attend the client. Whenever there is a new
     # -- clint, the handler is called

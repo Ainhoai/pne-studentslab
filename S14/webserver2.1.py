@@ -23,17 +23,17 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         # IN this simple server version:
         # We are NOT processing the client's request
         # We are NOT generating any response message
-        return
+        return #este return es indiferente.
 
 
 # ------------------------
 # - Server MAIN program
 # ------------------------
 # -- Set the new handler
-Handler = TestHandler
+handler = TestHandler #tipo o clase que atiende las peticiones del servidor HTTP.
 
 # -- Open the socket server
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
+with socketserver.TCPServer(("", PORT), handler) as httpd:
 
     print("Serving at PORT", PORT)
 

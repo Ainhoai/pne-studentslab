@@ -1,6 +1,6 @@
 import http.server
 import socketserver
-import termcolor
+
 
 PORT = 8080
 
@@ -9,14 +9,15 @@ socketserver.TCPServer.allow_reuse_address = True
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
-        termcolor.cprint(self.requestline, 'green')
+        print(self.requestline)
 
-        contents = "Resource not available"
+
         if self.path == "/":
             contents = "Welcome to my server"
             self.send_response(200)
         else:
             self.send_response(404)
+            contents = "Resource not available"
 
         contents_bytes = contents.encode()
         self.send_header('Content-Type', 'text/plain')
