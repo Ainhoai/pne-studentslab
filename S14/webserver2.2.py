@@ -14,14 +14,12 @@ socketserver.TCPServer.allow_reuse_address = True
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
-        """This method is called whenever the client invokes the GET method
-        in the HTTP protocol request"""
 
         # We just print a message
         print("GET received! Request line:")
 
         # Print the request line
-        termcolor.cprint("  " + self.requestline, 'green')
+        termcolor.cprint("  " + self.requestline, 'green') #atributo del constructor por defecto, que llama al constructor de la clase padre.
 
         # Print the command received (should be GET)
         print("  Command: " + self.command)

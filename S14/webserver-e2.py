@@ -1,6 +1,5 @@
 import http.server
 import socketserver
-import termcolor
 from pathlib import Path
 
 PORT = 8080
@@ -10,7 +9,7 @@ socketserver.TCPServer.allow_reuse_address = True
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
-        termcolor.cprint(self.requestline, 'green')
+        print(self.requestline)
 
         if self.path == "/" or self.path == "/index.html":
             contents = Path("index.html").read_text()

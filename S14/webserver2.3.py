@@ -1,6 +1,6 @@
 import http.server
 import socketserver
-import termcolor
+
 
 # Define the Server's port
 PORT = 8080
@@ -18,7 +18,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         in the HTTP protocol request"""
 
         # Print the request line
-        termcolor.cprint(self.requestline, 'green')
+        print(self.requestline)
 
         # IN this simple server version:
         # We are NOT processing the client's request
@@ -29,17 +29,17 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         contents = "I am the happy server! :-)"
 
         # Generating the response message
-        self.send_response(200)  # -- Status line: OK!
-
+        self.send_response(200)  # -- Status line: OK! esto es una funcion, metodo, subprograma, heredado de la clase baseHTTP...
+        #establece cual es el recurso HTTP de la respuesta.
         # Define the content-type header:
-        self.send_header('Content-Type', 'text/plain')
-        self.send_header('Content-Length', str(len(contents.encode())))
+        self.send_header('Content-Type', 'text/plain') #metodo clave valor.
+        self.send_header('Content-Length', str(len(contents.encode()))) #contabilizando cuantos bytes se envian.
 
         # The header is finished
-        self.end_headers()
+        self.end_headers()#blanck line, separa la cabecera de la parte del cuerpo.
 
         # Send the response message
-        self.wfile.write(contents.encode())
+        self.wfile.write(contents.encode()) #envia de vuelta el contenido. Del servidor al cliente.
 
         return
 
