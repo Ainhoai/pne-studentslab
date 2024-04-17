@@ -9,10 +9,10 @@ import jinja2 as j   #generar una pagina web de forma dinamica. El as es para po
 
 
 def read_html_file(filename):
-    file_path = os.path.join(HTML_FOLDER, filename)
-    contents = Path(file_path).read_text()
-    contents = j.Template(contents)
-    return contents
+    file_path = os.path.join(HTML_FOLDER, filename) #construye la ruta al fichero
+    contents = Path(file_path).read_text() #lee el contenido de path
+    contents = j.Template(contents) #j es alias de jinja 2, con una clase que es una plantilla y le paso el contenido que es un str con el contenido de html el de result-echo...
+    return contents  #ya no es un str, es un objeto de tipo plantilla con el codigo html.
 
 
 PORT = 8080
@@ -39,7 +39,8 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
                 msg_param = arguments['msg'][0]  #arguements["msg"] devuelve una lista con el mensaje; ahora sobre esta lista cojo la posicion 0.
                 print(msg_param)
                 contents = read_html_file("result-echo-server-e1.html").render(context={"todisplay": msg_param})
-                            #la funcion de arriba la uso aqui.
+                            #la funcion de arriba la uso aqui. Objeto de tipo plantilla que contiene el html; render es refrescar, actualizar, es un metodo de la clase template de jinja 2. Contiene lo mismo que el html, que es un diccionario que contiene una clave.
+
                 # contents = f"""       #esto seria la primera version pero no va a ser la mejor opcion.
                 #     <!DOCTYPE html>
                 #     <html lang="en">
@@ -53,6 +54,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
                 #             <a href="/">Main page</a>
                 #         </body>
                 #     </html>"""
+
                 self.send_response(200)
             except (KeyError, IndexError):
                 file_path = os.path.join(HTML_FOLDER, "format-e1.html")
