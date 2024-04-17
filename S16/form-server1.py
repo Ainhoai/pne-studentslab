@@ -1,6 +1,6 @@
 import http.server
 import socketserver
-
+import termcolor
 from pathlib import Path
 import os #operative system
 
@@ -12,7 +12,7 @@ socketserver.TCPServer.allow_reuse_address = True #reutilizar la direccion.
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self): #solo sabe contestar al cliente con el formulario independientemente de lo que el cliente le mande.
-        print(self.requestline)
+        termcolor.cprint(self.requestline, "green")
 
         file_path = os.path.join(HTML_FOLDER, "form-1.html")
         contents = Path(file_path).read_text()
