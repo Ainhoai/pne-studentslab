@@ -71,6 +71,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
         self.wfile.write(contents_bytes)
+        #podria poner aqui un return pero no hace falta.
 
 
 with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
