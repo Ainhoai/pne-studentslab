@@ -7,9 +7,9 @@
     <body>
         <h1>Echoing the receiving message:</h1>
         {{if context.capital_letters:}}
-            <p>{context.todisplay.upper()}</p>
+            <p>{{context.todisplay.upper()}}</p>
         {{else:}}
-            <p>{context.todisplay}</p>
+            <p>{{context.todisplay}}</p>
         {{endif}}
         <a href="/">Main page</a>
     </body>

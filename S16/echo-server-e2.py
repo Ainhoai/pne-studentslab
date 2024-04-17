@@ -2,12 +2,14 @@ import http.server
 import socketserver
 import termcolor
 from pathlib import Path
+import os
 from urllib.parse import urlparse, parse_qs
 import jinja2 as j
 
 
 def read_html_file(filename):
-    contents = Path("html/" + filename).read_text()
+    file_path = os.path.join(HTML_FOLDER, "form-e2.html")
+    contents = Path(file_path).read_text()
     contents = j.Template(contents)
     return contents
 
@@ -18,7 +20,7 @@ HTML_FOLDER = "html"
 socketserver.TCPServer.allow_reuse_address = True
 
 
-class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
+class MyHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         termcolor.cprint(self.requestline, 'green')
 
@@ -28,16 +30,17 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         arguments = parse_qs(url_path.query)
         print(f"Arguments: {arguments}")
         if path == "/":
-            contents = Path(f"{HTML_FOLDER}/form-e2.html").read_text()
+            file_path = os.path.join(HTML_FOLDER, "form-e2.html")
+            contents = Path(file_path).read_text()
             self.send_response(200)
         elif path == "/echo":
             try:
                 msg_param = arguments['msg'][0]
-                context = {
+                context_v = {
                     'capital_letters': 'capital_letters' in arguments,
-                    'todisplay': msg_param
-                }
-                contents = read_html_file("result-echo-server-e1.html").render(context=context)
+                    'todisplay': msg_param}
+
+                contents = read_html_file("result-echo-server-e2.html").render(context=context_v) #tengo una variable pq me he creado dentro el diccionario con las parejas clave valor.
 
                 # contents = """
                 #     <!DOCTYPE html>
@@ -73,7 +76,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(contents_bytes)
 
 
-with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
+with socketserver.TCPServer(("", PORT), MyHandler) as httpd:
     print("Serving at PORT...", PORT)
     try:
         httpd.serve_forever()
