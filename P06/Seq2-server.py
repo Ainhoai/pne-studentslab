@@ -23,10 +23,8 @@ def read_html_template(file_name):
 
 def handle_get(arguments):  #para poner el codigo mas ordenado.
     try:
-        sequence_number = int(arguments['sequence_number'][0])
-        file_path = os.path.join(HTML_FOLDER, "get.html")
-        contents = Path(file_path).read_text()
-        contents = jinja2.Template(contents)
+        sequence_number = int(arguments['sequence_number'][0]) #arguements es un diccionario que contiene claves y valores)
+        contents = read_html_template("get.html")
         context = {'number': sequence_number, 'sequence': SEQUENCES[sequence_number]}
         contents = contents.render(context=context)
         code = HTTPStatus.OK
@@ -34,7 +32,7 @@ def handle_get(arguments):  #para poner el codigo mas ordenado.
         file_path = os.path.join(HTML_FOLDER, "error.html")
         contents = Path(file_path).read_text()
         code = HTTPStatus.NOT_FOUND
-    return contents, code
+    return contents, code #se ejecuta siempre devolviendo el contents y code (200 o 404).
 
 
 socketserver.TCPServer.allow_reuse_address = True
@@ -55,12 +53,12 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler): #de donde tiene 
             context = {'n_sequences': len(SEQUENCES), 'genes': GENES} #me estoy creando el diccionario. Conexion con el html.
             contents = contents.render(context=context) # contexto actualizate. Y es un string.
             self.send_response(200)
-        elif resource == "/ping":
+        elif resource == "/ping": #pagina web estática.
             file_path = os.path.join(HTML_FOLDER, "ping.html")
-            contents = Path(file_path).read_text()
+            contents = Path(file_path).read_text() #objeto de tipo string.
             self.send_response(200)
-        elif resource == "/get":
-            contents, code = handle_get(arguments)
+        elif resource == "/get": #como hacer una funcion por cada recurso distinto.
+            contents, code = handle_get(arguments) #es una tupla (me devuelve dos, contents, cadena de caracters; y code, el entero con la peticion del cliente (200 o 404)).
             self.send_response(code)
         elif resource == "/gene":
             try:
@@ -69,9 +67,9 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler): #de donde tiene 
                 contents = Path(file_path).read_text()
                 contents = jinja2.Template(contents)
                 file_name = os.path.join("..", "sequences", gene_name + ".txt")
-                s = Seq()
-                s.read_fasta(file_name)
-                context = {'gene_name': gene_name, 'sequence': str(s)}
+                s = Seq() #se crea una sequencia nula, sin valor.
+                s.read_fasta(file_name) #doy valor a Seq(), s es un objeto de la clase seq.
+                context = {'gene_name': gene_name, 'sequence': str(s)} # str(s) llama a __str__ de Seq1.
                 contents = contents.render(context=context)
                 self.send_response(200)
             except (KeyError, IndexError, FileNotFoundError):
@@ -109,7 +107,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler): #de donde tiene 
             contents = Path(file_path).read_text()
             self.send_response(404)
 
-        contents_bytes = contents.encode()
+        contents_bytes = contents.encode() #transformo a bytes. Tdo esto es el body.
         self.send_header('Content-Type', 'text/html')
         self.send_header('Content-Length', str(len(contents_bytes)))
         self.end_headers()
@@ -125,3 +123,4 @@ with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd: #program
         print()
         print("Stopped by the user")
         httpd.server_close()
+
