@@ -26,7 +26,7 @@
 
     <form action="/gene" method="get">
         Get the sequence. Select a sequence number:
-        <select name="sequence_number">
+        <select name="gene_name">
             {% for g in context.genes%}
             <option value={{g}}>{{g}}</option>
             {% endfor %}
@@ -35,7 +35,7 @@
     </form>
 
 
-    <form action="/options" method="get">
+    <form action="/operation" method="get">
         Write a sequence:
         <input type="text" name="bases">
         <br>

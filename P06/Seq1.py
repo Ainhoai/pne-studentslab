@@ -83,8 +83,7 @@ class Seq:
         return most_frequent_base
 
     def info(self):
-        s = f"Sequence: {self.strbases}\n"
-        s += f"Total length: {self.len()}\n"
+        s = f"Total length: {self.len()}\n"
         for base, count in self.count().items(): #me devuelve en cada vuelta una pareja ("A: 3"; p.ej)
             if self.strbases == "NULL" or self.strbases == "ERROR!":
                 percentage = 0

@@ -66,7 +66,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler): #de donde tiene 
                 file_path = os.path.join(HTML_FOLDER, "gene.html")
                 contents = Path(file_path).read_text()
                 contents = jinja2.Template(contents)
-                file_name = os.path.join("..", "sequences", gene_name + ".txt")
+                file_name = os.path.join("sequences", gene_name + ".txt")
                 s = Seq() #se crea una sequencia nula, sin valor.
                 s.read_fasta(file_name) #doy valor a Seq(), s es un objeto de la clase seq.
                 context = {'gene_name': gene_name, 'sequence': str(s)} # str(s) llama a __str__ de Seq1.
@@ -80,11 +80,9 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler): #de donde tiene 
             try:
                 bases = arguments['bases'][0]
                 op = arguments['op'][0]  # lower()
-                file_path = os.path.join(HTML_FOLDER, "operation.html")
-                contents = Path(file_path).read_text()
-                contents = jinja2.Template(contents)
+                contents = read_html_template("operation.html")
                 s = Seq(bases)
-                if op in OPERATIONS:
+                if op in OPERATIONS: #comprobar si la operacion que quiere el usuario esta dentro de la lista OPERATIONS.
                     if op == "info":
                         result = s.info().replace("\n", "<br><br>")
                     elif op == "comp":
