@@ -3,7 +3,7 @@ import termcolor
 from pathlib import Path
 
 json_string = Path("people-e1.json").read_text()
-people = json.loads(json_string)['people']
+people = json.loads(json_string)['people'] #meto tod0 el fichero json; accedo a la lista de dentro del diccionario grande.
 for person in people:
     firstname = person['Firstname']
     lastname = person['Lastname']
