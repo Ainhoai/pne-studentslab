@@ -25,7 +25,7 @@ r1 = conn.getresponse() #r1 es un objeto de la clase HTTPResponse.
 print(f"Response received!: {r1.status} {r1.reason}\n") #pinta el numero del codigo (200, 404) y luego el texto asociado a es codigo (OK o not found).
 
 # -- Read the response's body
-data1 = r1.read().decode("utf-8")
+data1 = r1.read().decode("utf-8") #esto lee el self.wfile.write(contents_bytes) del servidor en bytes y los decodifica.
 
 # -- Print the received data
 print(f"CONTENT: {data1}")

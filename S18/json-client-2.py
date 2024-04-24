@@ -13,13 +13,13 @@ conn = http.client.HTTPConnection(SERVER, PORT)
 # -- Send the request message, using the GET method. We are
 # -- requesting the main page (/)
 try:
-    conn.request("GET", "/listusers")
+    conn.request("GET", "/listusers") #por dentro lleva el send del clinete en sockets.
 except ConnectionRefusedError:
     print("ERROR! Cannot connect to the Server")
     exit()
 
 # -- Read the response message from the server
-r1 = conn.getresponse()
+r1 = conn.getresponse() #recive datos, el recive del cliente en sockets.
 
 # -- Print the status line
 print(f"Response received!: {r1.status} {r1.reason}\n")
@@ -29,7 +29,7 @@ data1 = r1.read().decode("utf-8")
 
 # -- Create a variable with the data,
 # -- form the JSON received
-person = json.loads(data1)
+person = json.loads(data1) #abriendo el fichero json e interpretando.
 
 print("CONTENT: ")
 
