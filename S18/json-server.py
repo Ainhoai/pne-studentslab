@@ -26,12 +26,12 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         print(path, params)
 
         if path == "/":
-            contents = read_html_file("index.html").render()
-            content_type = 'text/html'
+            contents = read_html_file("index.html").render() #lo renderiza pero no pasa contexto porque no tiene que sustituir.
+            content_type = 'text/html' #para que a la hora de mandarle la respuesta al cliente, indique de que tipo es.
             status_code = 200
-        elif path == "/listusers":
+        elif path == "/listusers": #para que devuleva una lista de usuarios.
             contents = Path('people-3.json').read_text()
-            content_type = 'application/json'
+            content_type = 'application/json' #manda formato json.
             status_code = 200
         else:
             contents = Path("error.html").read_text()

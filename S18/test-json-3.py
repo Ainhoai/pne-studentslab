@@ -19,10 +19,10 @@ print(age)
 termcolor.cprint("Phone numbers: ", 'green', end='')
 print(len(phoneNumbers))
 
-for i, num in enumerate(phoneNumbers):
-    termcolor.cprint("  Phone {}:".format(i), 'blue')
+for i, phone in enumerate(phoneNumbers): #aqui num es diccionario.
+    termcolor.cprint(f"  Phone {i}:", 'blue')
 
     termcolor.cprint("    Type: ", 'red', end='')
-    print(num['type'])
+    print(phone['type']) #diccionario.
     termcolor.cprint("    Number: ", 'red', end='')
-    print(num['number'])
+    print(phone['number'])
