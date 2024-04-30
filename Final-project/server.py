@@ -37,6 +37,8 @@ def server_request(server, url):
         if response.status == HTTPStatus.OK:
             json_str = response.read().decode()
             data = json.loads(json_str)
+        else:
+            error = True
     except Exception:  # Comment
         error = True
     return error, data
@@ -55,12 +57,13 @@ def list_species(endpoint, parameters):
     url = f"{request['resource']}?{request['params']}"
     error, data = server_request(EMSEMBL_SERVER, url)
     if not error:
-        limit = None
+        limit = None # if i set none, it will get all the components of the list.
         if 'limit' in parameters:
             limit = int(parameters['limit'][0])
+            print(data)
         species = data['species']  # list<dict>
-        name_species = []
-        for specie in species[:limit]:
+        name_species = []  # empty list.
+        for specie in species[:limit]:  # recorro la lista de diccionario hasta el set limit.
             name_species.append(specie['display_name'])
         context = {
             'number_of_species': len(species),
