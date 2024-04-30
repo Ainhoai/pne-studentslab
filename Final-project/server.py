@@ -96,7 +96,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             contents = Path(file_path).read_text()
         elif endpoint == "/listSpecies":
             code, contents = list_species(endpoint, parameters)
-        elif endpoint == "/karyotype":  # fill them up.
+        elif endpoint == "/karyotype":  # fill them up. Create a function so that this code is more structured.
             pass
         elif endpoint == "/chromosomeLength":
             pass
