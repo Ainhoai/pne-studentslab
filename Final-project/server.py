@@ -3,6 +3,7 @@ from http import HTTPStatus
 import socketserver
 import termcolor
 from pathlib import Path
+import http.client
 from urllib.parse import urlparse, parse_qs
 import jinja2
 import os
@@ -27,8 +28,6 @@ def read_html_template(file_name):
 
 
 def server_request(server, url):
-    import http.client
-
     error = False
     data = None
     try:
@@ -86,7 +85,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         endpoint = parsed_url.path  # resource or path
         print(f"Endpoint: {endpoint}")
-        parameters = parse_qs(parsed_url.query)
+        parameters = parse_qs(parsed_url.query)  # arguments.
         print(f"Parameters: {parameters}")
 
         code = HTTPStatus.OK
@@ -97,7 +96,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             contents = Path(file_path).read_text()
         elif endpoint == "/listSpecies":
             code, contents = list_species(endpoint, parameters)
-        elif endpoint == "/karyotype":
+        elif endpoint == "/karyotype":  # fill them up.
             pass
         elif endpoint == "/chromosomeLength":
             pass
@@ -107,7 +106,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
         self.send_response(code)
         contents_bytes = contents.encode()
-        self.send_header('Content-Type', content_type)
+        self.send_header('Content-Type', content_type) # content_type is always text-html, in this practice.
         self.send_header('Content-Length', str(len(contents_bytes)))
         self.end_headers()
 
