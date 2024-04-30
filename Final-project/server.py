@@ -61,7 +61,6 @@ def list_species(endpoint, parameters):
         limit = None # if i set none, it will get all the components of the list.
         if 'limit' in parameters:
             limit = int(parameters['limit'][0])
-            print(data)
         species = data['species']  # list<dict>
         name_species = []  # empty list.
         for specie in species[:limit]:  # recorro la lista de diccionario hasta el set limit.
@@ -78,13 +77,13 @@ def list_species(endpoint, parameters):
         code = HTTPStatus.SERVICE_UNAVAILABLE  # Comment
     return code, contents
 
+
 def karyotype(endpoint, parameters):
     request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
     species = parameters["species"][0]
     url = f"{request['resource']}{species}?{request['params']}"
     error, data = server_request(EMSEMBL_SERVER, url)
     if not error:
-        print(data)
         context = {
             "species": species,
             "karyotype": data["karyotype"]
@@ -96,7 +95,6 @@ def karyotype(endpoint, parameters):
         contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
         code = HTTPStatus.SERVICE_UNAVAILABLE
     return code, contents
-
 
 
 socketserver.TCPServer.allow_reuse_address = True
