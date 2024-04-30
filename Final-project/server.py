@@ -96,6 +96,24 @@ def karyotype(endpoint, parameters):
         code = HTTPStatus.SERVICE_UNAVAILABLE
     return code, contents
 
+def chromosome_length(endpoint, parameters):
+    request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
+    species = parameters["species"][0]
+    url = f"{request['resource']}{species}?{request['params']}"
+    error, data = server_request(EMSEMBL_SERVER, url)
+    if not error:
+        context = {
+            "species": species,
+            "karyotype": data["karyotype"]
+
+        }
+        contents = read_html_template("chromosome_length.html").render(context=context)
+        code = HTTPStatus.OK
+    else:
+        contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
+        code = HTTPStatus.SERVICE_UNAVAILABLE
+    return code, contents
+
 
 socketserver.TCPServer.allow_reuse_address = True
 
@@ -121,7 +139,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         elif endpoint == "/karyotype":  # fill them up. Create a function so that this code is more structured.
             code, contents = karyotype(endpoint, parameters)
         elif endpoint == "/chromosomeLength":
-            pass
+            code, contents = chromosome_length(endpoint, parameters)
         else:
             contents = handle_error(endpoint, RESOURCE_NOT_AVAILABLE_ERROR)
             code = HTTPStatus.NOT_FOUND
