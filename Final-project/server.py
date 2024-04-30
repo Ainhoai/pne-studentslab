@@ -14,7 +14,8 @@ PORT = 8080
 HTML_FOLDER = "html"
 EMSEMBL_SERVER = "rest.ensembl.org"
 RESOURCE_TO_ENSEMBL_REQUEST = {
-    '/listSpecies': {'resource': "/info/species", 'params': "content-type=application/json"}
+    '/listSpecies': {'resource': "/info/species", 'params': "content-type=application/json"},
+    "/karyotype": {"resource": "/info/assembly/", 'params': "content-type=application/json"}
 }
 RESOURCE_NOT_AVAILABLE_ERROR = "Resource not available"
 ENSEMBL_COMMUNICATION_ERROR = "Error in communication with the Ensembl server"
@@ -77,6 +78,26 @@ def list_species(endpoint, parameters):
         code = HTTPStatus.SERVICE_UNAVAILABLE  # Comment
     return code, contents
 
+def karyotype(endpoint, parameters):
+    request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
+    species = parameters["species"][0]
+    url = f"{request['resource']}{species}?{request['params']}"
+    error, data = server_request(EMSEMBL_SERVER, url)
+    if not error:
+        print(data)
+        context = {
+            "species": species,
+            "karyotype": data["karyotype"]
+
+        }
+        contents = read_html_template("karyotype.html").render(context=context)
+        code = HTTPStatus.OK
+    else:
+        contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
+        code = HTTPStatus.SERVICE_UNAVAILABLE
+    return code, contents
+
+
 
 socketserver.TCPServer.allow_reuse_address = True
 
@@ -100,7 +121,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         elif endpoint == "/listSpecies":
             code, contents = list_species(endpoint, parameters)
         elif endpoint == "/karyotype":  # fill them up. Create a function so that this code is more structured.
-            pass
+            code, contents = karyotype(endpoint, parameters)
         elif endpoint == "/chromosomeLength":
             pass
         else:
