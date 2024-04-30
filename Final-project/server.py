@@ -32,7 +32,7 @@ def server_request(server, url):
     data = None
     try:
         connection = http.client.HTTPSConnection(server)
-        connection.request("GET", url)
+        connection.request("GET", url)  # petition
         response = connection.getresponse()
         if response.status == HTTPStatus.OK:
             json_str = response.read().decode()
@@ -121,3 +121,5 @@ with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
         print()
         print("Stopped by the user")
         httpd.server_close()
+
+
