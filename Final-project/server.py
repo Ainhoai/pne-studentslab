@@ -16,7 +16,7 @@ EMSEMBL_SERVER = "rest.ensembl.org"
 RESOURCE_TO_ENSEMBL_REQUEST = {
     '/listSpecies': {'resource': "/info/species", 'params': "content-type=application/json"},
     "/karyotype": {"resource": "/info/assembly/", 'params': "content-type=application/json"},
-    "/chromosome_length": {"resource": "/info/assembly/", 'params': "content-type=application/json"}
+    "/chromosomeLength": {"resource": "/info/assembly/", 'params': "content-type=application/json"}
 }
 RESOURCE_NOT_AVAILABLE_ERROR = "Resource not available"
 ENSEMBL_COMMUNICATION_ERROR = "Error in communication with the Ensembl server"
@@ -84,6 +84,7 @@ def karyotype(endpoint, parameters):
     species = parameters["species"][0]
     url = f"{request['resource']}{species}?{request['params']}"
     error, data = server_request(EMSEMBL_SERVER, url)
+    print(data)
     if not error:
         context = {
             "species": species,
@@ -97,17 +98,23 @@ def karyotype(endpoint, parameters):
         code = HTTPStatus.SERVICE_UNAVAILABLE
     return code, contents
 
+
 def chromosome_length(endpoint, parameters):
     request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
     species = parameters["species"][0]
+    chromo = parameters["chromo"][0]
     url = f"{request['resource']}{species}?{request['params']}"
     error, data = server_request(EMSEMBL_SERVER, url)
+    print(data)
     if not error:
-        context = {
-            "species": species,
-            "chromosome_length": len(data["karyotype"])
-
+        context = context = {
+            "top_level_region": {
+                "coord_system": data.get("coord_system"),
+                "length": data.get("length"),
+                "name": data.get("name")
+            }
         }
+
         contents = read_html_template("chromosome_length.html").render(context=context)
         code = HTTPStatus.OK
     else:
