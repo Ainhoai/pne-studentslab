@@ -15,7 +15,8 @@ HTML_FOLDER = "html"
 EMSEMBL_SERVER = "rest.ensembl.org"
 RESOURCE_TO_ENSEMBL_REQUEST = {
     '/listSpecies': {'resource': "/info/species", 'params': "content-type=application/json"},
-    "/karyotype": {"resource": "/info/assembly/", 'params': "content-type=application/json"}
+    "/karyotype": {"resource": "/info/assembly/", 'params': "content-type=application/json"},
+    "/chromosome_length": {"resource": "/info/assembly/", 'params': "content-type=application/json"}
 }
 RESOURCE_NOT_AVAILABLE_ERROR = "Resource not available"
 ENSEMBL_COMMUNICATION_ERROR = "Error in communication with the Ensembl server"
@@ -104,7 +105,7 @@ def chromosome_length(endpoint, parameters):
     if not error:
         context = {
             "species": species,
-            "karyotype": data["karyotype"]
+            "chromosome_length": len(data["karyotype"])
 
         }
         contents = read_html_template("chromosome_length.html").render(context=context)
