@@ -12,17 +12,17 @@ import json
 
 PORT = 8080
 HTML_FOLDER = "html"
-EMSEMBL_SERVER = "rest.ensembl.org"
+ENSEMBL_SERVER = "rest.ensembl.org"
 RESOURCE_TO_ENSEMBL_REQUEST = {
     '/listSpecies': {'resource': "/info/species", 'params': "content-type=application/json"},
     "/karyotype": {"resource": "/info/assembly/", 'params': "content-type=application/json"},
     "/chromosomeLength": {"resource": "/info/assembly/", 'params': "content-type=application/json"}
-}
-RESOURCE_NOT_AVAILABLE_ERROR = "Resource not available"
+}  # this is how we are going to request what we want to ensemble's page.
+RESOURCE_NOT_AVAILABLE_ERROR = "Resource not available" # both of these are just in case of error.
 ENSEMBL_COMMUNICATION_ERROR = "Error in communication with the Ensembl server"
 
 
-def read_html_template(file_name):
+def read_html_template(file_name):  # this function is to read the content of each html template.
     file_path = os.path.join(HTML_FOLDER, file_name)
     contents = Path(file_path).read_text()
     contents = jinja2.Template(contents)
@@ -51,27 +51,27 @@ def handle_error(endpoint, message):
         'endpoint': endpoint,
         'message': message
     }
-    return read_html_template("error.html").render(context=context)
+    return read_html_template("error.html").render(context=context) # in case of error.
 
 
 def list_species(endpoint, parameters):
-    request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
-    url = f"{request['resource']}?{request['params']}"
-    error, data = server_request(EMSEMBL_SERVER, url)
-    if not error:
-        limit = None # if i set none, it will get all the components of the list.
-        if 'limit' in parameters:
-            limit = int(parameters['limit'][0])
-        species = data['species']  # list<dict>
-        name_species = []  # empty list.
-        for specie in species[:limit]:  # recorro la lista de diccionario hasta el set limit.
-            name_species.append(specie['display_name'])
-        context = {
-            'number_of_species': len(species),
+    request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]  # send our request to ensemble, depending on what we are asking for it will take one or another rute.
+    url = f"{request['resource']}?{request['params']}"  # this will be the url that will appear on the web.
+    error, data = server_request(ENSEMBL_SERVER, url) # this should be error: False; data: (list/ dictionary from ensemble web).
+    if not error: # if every thing goes ok.
+        limit = None  # if i set none, it will get all the components of the list.
+        if 'limit' in parameters: # because we are introducing a limit this is the rute it takes. "limit" is in params.
+            limit = int(parameters['limit'][0])  # In order to get the integer that the user is setting in the web.
+        species = data['species']  # list<dict> # inside the list that we are getting from ensemble, there is a dictionary and we are choosing to get "species" from all the datat.
+        name_species = []  # empty list. we are creating it.
+        for specie in species[:limit]:  # we are going through the whole list until we get to the limit chosen.
+            name_species.append(specie['display_name'])  # we are adding to name_species (an empty dictionary) the species display name of all the species within the limit.
+        context = { # we are creating a context so that the response on the website changes depending on what gets to the server. Non static that conects with html.
+            'number_of_species': len(species),  # number in the list that the species occupies.
             'limit': limit,
             'name_species': name_species
         }
-        contents = read_html_template("species.html").render(context=context)
+        contents = read_html_template("species.html").render(context=context) # this is how it connects with html and changes.
         code = HTTPStatus.OK
     else:
         contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
@@ -80,14 +80,14 @@ def list_species(endpoint, parameters):
 
 
 def karyotype(endpoint, parameters):
-    request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
-    species = parameters["species"][0]
-    url = f"{request['resource']}{species}?{request['params']}"
-    error, data = server_request(EMSEMBL_SERVER, url)
+    request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]  # connection to endpoint which is the petition to ensemble.
+    species = parameters["species"][0]  # again we are creating a species variable to access to the parameters wanted.
+    url = f"{request['resource']}{species}?{request['params']}" # this url changes a little because of how ensemble wants the petition to be done.
+    error, data = server_request(ENSEMBL_SERVER, url) # error should be false; data should be ensembles database.
     print(data)
     if not error:
         context = {
-            "species": species,
+            "species": species, # we just need species name and karyotype: we accede through data.
             "karyotype": data["karyotype"]
 
         }
@@ -100,19 +100,14 @@ def karyotype(endpoint, parameters):
 
 
 def chromosome_length(endpoint, parameters):
-    request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
+    request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint] # connecting to chromosome_length the way that ensemble wants
     species = parameters["species"][0]
-    chromo = parameters["chromo"][0]
     url = f"{request['resource']}{species}?{request['params']}"
-    error, data = server_request(EMSEMBL_SERVER, url)
-    print(data)
+    error, data = server_request(ENSEMBL_SERVER, url)
+    chromo = data["length"]
     if not error:
-        context = context = {
-            "top_level_region": {
-                "coord_system": data.get("coord_system"),
-                "length": data.get("length"),
-                "name": data.get("name")
-            }
+        context = {
+            "chromosome_length": len(chromo)
         }
 
         contents = read_html_template("chromosome_length.html").render(context=context)
