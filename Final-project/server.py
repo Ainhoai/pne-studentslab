@@ -87,7 +87,7 @@ def karyotype(endpoint, parameters):
     print(data)
     if not error:
         context = {
-            "species": species, # we just need species name and karyotype: we accede through data.
+            "species": species,  # we just need species name and karyotype: we accede through data.
             "karyotype": data["karyotype"]
 
         }
@@ -104,12 +104,17 @@ def chromosome_length(endpoint, parameters):
     species = parameters["species"][0]
     url = f"{request['resource']}{species}?{request['params']}"
     error, data = server_request(ENSEMBL_SERVER, url)
-    chromo = data["length"]
+    print(data)
     if not error:
-        context = {
-            "chromosome_length": len(chromo)
-        }
+        info = data["top_level_region"]
+        if "name" in info:
+            chromosome_info = info["name"]
+            chromo_length = chromosome_info["length"]
 
+        context = {
+            "species": species,
+            "chromo": "name",
+        }
         contents = read_html_template("chromosome_length.html").render(context=context)
         code = HTTPStatus.OK
     else:
