@@ -102,18 +102,20 @@ def karyotype(endpoint, parameters):
 def chromosome_length(endpoint, parameters):
     request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint] # connecting to chromosome_length the way that ensemble wants
     species = parameters["species"][0]
+    chromo = parameters["chromo"][0]  # dentro del formulario, necesitamos dos datos siendo species y chromosome.
     url = f"{request['resource']}{species}?{request['params']}"
     error, data = server_request(ENSEMBL_SERVER, url)
     print(data)
     if not error:
-        info = data["top_level_region"]
-        if "name" in info:
-            chromosome_info = info["name"]
-            chromo_length = chromosome_info["length"]
-
+        chromosomes = data["top_level_region"]  # me devuleve todos los cromosomas de la especie.
+        c_length = None
+        for c in chromosomes:
+            if c["name"] == chromo: # si el diccionario c tiene como valor asociado "name" es igaual al chromosoma.
+                c_length = c["length"]
+                break
         context = {
-            "species": species,
-            "chromo": "name",
+            "chromo": chromo,
+            "length": c_length
         }
         contents = read_html_template("chromosome_length.html").render(context=context)
         code = HTTPStatus.OK
