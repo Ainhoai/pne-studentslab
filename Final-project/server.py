@@ -154,7 +154,7 @@ def gene_seq(endpoint, parameters):
                 "gene": gene,
                 "bases": bases
             }
-            contents = read_html_template("chromosome_length.html").render(context=context)
+            contents = read_html_template("gene_seq.html").render(context=context)
             code = HTTPStatus.OK
         else:
             contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
@@ -172,8 +172,25 @@ def gene_info(endpoint, parameters):
         error, data = server_request(ENSEMBL_SERVER, url)
         if not error:
             print(data)
+            start = data["start"]
+            end = data["end"]
+            length = end-start
+            chromosome_name = data["assembly_name"]
+            context = {
+                "gene": gene,
+                "start": start,
+                "end": end,
+                "length": length,
+                "gene_id": gene_id,
+                "chromosome_length": chromosome_name,
+            }
+
+            contents = read_html_template("gene_info.html").render(context=context)
+            code = HTTPStatus.OK
         else:
-            pass
+            contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
+            code = HTTPStatus.SERVICE_UNAVAILABLE
+        return code, contents
 
 
 
