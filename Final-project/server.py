@@ -16,7 +16,8 @@ ENSEMBL_SERVER = "rest.ensembl.org"
 RESOURCE_TO_ENSEMBL_REQUEST = {
     '/listSpecies': {'resource': "/info/species", 'params': "content-type=application/json"},
     "/karyotype": {"resource": "/info/assembly/", 'params': "content-type=application/json"},
-    "/chromosomeLength": {"resource": "/info/assembly/", 'params': "content-type=application/json"}
+    "/chromosomeLength": {"resource": "/info/assembly/", 'params': "content-type=application/json"},
+    "/geneSeq": {"resourse":"/sequence/id", "params": "content-type=application/json"}
 }  # this is how we are going to request what we want to ensemble's page.
 RESOURCE_NOT_AVAILABLE_ERROR = "Resource not available" # both of these are just in case of error.
 ENSEMBL_COMMUNICATION_ERROR = "Error in communication with the Ensembl server"
@@ -44,6 +45,18 @@ def server_request(server, url):
     except Exception:  # Comment
         error = True
     return error, data
+
+
+def get_id(gene):
+    resource = "/homology/symbol/human" + gene # symbol es el gen.
+    params = "content-type=application/json;format=condensed"  # me devuelve la informacion lo mas resumida posible.
+    url = f"{resource}?{params}"
+    error, data = server_request(ENSEMBL_SERVER, url)
+    gene_id = None
+    if not error:
+        print(data)
+        gene_id = data["data"][0]["id"]
+    return gene_id
 
 
 def handle_error(endpoint, message):
@@ -123,6 +136,17 @@ def chromosome_length(endpoint, parameters):
         contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
         code = HTTPStatus.SERVICE_UNAVAILABLE
     return code, contents
+
+
+def gene_seq(endpoint, parameters):
+    if get_id is not None:
+        request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
+        url = f"{request['resource']}{get_id}?{request['params']}"
+        error, data = server_request(ENSEMBL_SERVER, url)
+        if not error:
+            print(data)
+            get_id()
+
 
 
 socketserver.TCPServer.allow_reuse_address = True
