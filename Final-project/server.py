@@ -17,7 +17,8 @@ RESOURCE_TO_ENSEMBL_REQUEST = {
     '/listSpecies': {'resource': "/info/species", 'params': "content-type=application/json"},
     "/karyotype": {"resource": "/info/assembly/", 'params': "content-type=application/json"},
     "/chromosomeLength": {"resource": "/info/assembly/", 'params': "content-type=application/json"},
-    "/geneSeq": {"resourse":"/sequence/id", "params": "content-type=application/json"}
+    "/geneSeq": {"resource":"/sequence/id", "params": "content-type=application/json"},
+    "geneInfo": {"resource": "/overload/id", "params": "content-type=application/json;feature=gene"}
 }  # this is how we are going to request what we want to ensemble's page.
 RESOURCE_NOT_AVAILABLE_ERROR = "Resource not available" # both of these are just in case of error.
 ENSEMBL_COMMUNICATION_ERROR = "Error in communication with the Ensembl server"
@@ -161,6 +162,22 @@ def gene_seq(endpoint, parameters):
         return code, contents
 
 
+def gene_info(endpoint, parameters):
+    gene = parameters["gene"][0]
+    gene_id = get_id(gene)
+    print(f"Gene: {gene} - Gene ID: {gene_id}")
+    if get_id is not None:
+        request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
+        url = f"{request['resource']}{get_id}?{request['params']}"
+        error, data = server_request(ENSEMBL_SERVER, url)
+        if not error:
+            print(data)
+        else:
+            pass
+
+
+
+
 
 
 
@@ -191,6 +208,10 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             code, contents = chromosome_length(endpoint, parameters)
         elif endpoint == "/geneSeq":
             code, contents = gene_seq(endpoint, parameters)
+        elif endpoint == "geneInfo":
+            code, contents = gene_info(endpoint, parameters)
+        elif endpoint:
+            pass
         else:
             contents = handle_error(endpoint, RESOURCE_NOT_AVAILABLE_ERROR)
             code = HTTPStatus.NOT_FOUND
