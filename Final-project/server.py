@@ -139,13 +139,28 @@ def chromosome_length(endpoint, parameters):
 
 
 def gene_seq(endpoint, parameters):
+    gene = parameters["gene"][0]
+    gene_id = get_id(gene)
+    print(f"Gene: {gene} - Gene ID: {gene_id}")
     if get_id is not None:
         request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
         url = f"{request['resource']}{get_id}?{request['params']}"
         error, data = server_request(ENSEMBL_SERVER, url)
         if not error:
             print(data)
-            get_id()
+            bases = data["seq"]
+            context = {
+                "gene": gene,
+                "bases": bases
+            }
+            contents = read_html_template("chromosome_length.html").render(context=context)
+            code = HTTPStatus.OK
+        else:
+            contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
+            code = HTTPStatus.SERVICE_UNAVAILABLE
+        return code, contents
+
+
 
 
 
