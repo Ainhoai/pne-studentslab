@@ -200,19 +200,40 @@ def gene_info(endpoint, parameters):
 
 
 def gene_calc(endpoint, parameters):
-    gene = parameters["gene"][0]
-    gene_id = get_id(gene)
-    print(f"Gene: {gene} - Gene ID: {gene_id}")
-    if get_id is not None:
+    gene = parameters['gene'][0]
+    if gene is not None:
         request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
-        url = f"{request['resource']}{get_id}?{request['params']}"
+        url = f"{request['resource']}{gene}?{request['params']}"
         error, data = server_request(ENSEMBL_SERVER, url)
         if not error:
-            print(data)
-            bases = data["seq"]
+            sequence = data["seq"]
+            A = 0
+            C = 0
+            G = 0
+            T = 0
+            for b in sequence:
+                if "A" in sequence:
+                    A += 1
+                elif "C" in sequence:
+                    C += 1
+                elif "G" in sequence:
+                    G += 1
+                elif "T" in sequence:
+                    T += 1
+            total_length = A + C + G + T
+            base_A = (A / total_length) * 100
+            base_C = (C / total_length) * 100
+            base_G = (G / total_length) * 100
+            base_T = (T / total_length) * 100
+
+
             context = {
                 "gene": gene,
-                "bases": bases
+                "total_length": total_length,
+                "A": base_A,
+                "C": base_C,
+                "G": base_G,
+                "T": base_T
             }
             contents = read_html_template("gene_info.html").render(context=context)
             code = HTTPStatus.OK
