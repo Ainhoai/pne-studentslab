@@ -253,7 +253,7 @@ def gene_list(parameters):
     url = f"{resource}?{params}"
     error, data = server_request(ENSEMBL_SERVER, url)
     if not error:
-
+        print(data)
 
         context = {
             "chromo": chromo,
