@@ -20,7 +20,6 @@ RESOURCE_TO_ENSEMBL_REQUEST = {
     "/geneSeq": {"resource": "/sequence/id/", "params": "content-type=application/json"},
     "/geneInfo": {"resource": "/overlap/id/", "params": "content-type=application/json;feature=gene"},
     "/geneCalc": {"resource": "/sequence/id/", "params": "content-type=application/json"},
-    "/geneList": {"resource": "/sequence/id/", "params": "content-type=application/json"}
 }  # this is how we are going to request what we want to ensemble's page.
 
 RESOURCE_NOT_AVAILABLE_ERROR = "Resource not available"  # both of these are just in case of error.
@@ -245,34 +244,23 @@ def gene_calc(endpoint, parameters):
         return code, contents
 
 
-def get_gene(gene):
-    resource = "/overlap/region/human/" + gene
-    params = 'content-type=application/json;format=condensed'
+def gene_list(parameters):
+    chromo = parameters["chromo"][0]
+    start = int(parameters["start"][0])
+    end = int(parameters["end"][0])
+    resource = f"/overlap/region/human {chromo}: {start}-{end}"
+    params = "content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon"
     url = f"{resource}?{params}"
     error, data = server_request(ENSEMBL_SERVER, url)
-    chromo = None
     if not error:
-        chromo = data['chromo'][0]
-    return chromo
-
-
-def gene_list(endpoint, parameters):
-    chromo = parameters["chromo"][0]
-    chromo = get_gene(chromo)
-    print(f"Chromo: {chromo} in gene")
-    if chromo is not None:
-        request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
-        url = f"{request['resource']}{chromo}?{request['params']}"
-        error, data = server_request(ENSEMBL_SERVER, url)
-        if not error:
-            print(data)
-
+        print(data)
 
         context = {
-            "chromo": chromo
+            "chromo": chromo,
+            "start": start,
+            "end": end,
         }
-
-        contents = read_html_template("gene_list.html").render(context=context)
+        contents = read_html_template("gene_calc.html").render(context=context)
         code = HTTPStatus.OK
     else:
         contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
@@ -312,7 +300,7 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         elif endpoint == "/geneCalc":
             code, contents = gene_calc(endpoint, parameters)
         elif endpoint == "/geneList":
-            code, contents = gene_list(endpoint, parameters)
+            code, contents = gene_list(parameters)
         else:
             contents = handle_error(endpoint, RESOURCE_NOT_AVAILABLE_ERROR)
             code = HTTPStatus.NOT_FOUND
