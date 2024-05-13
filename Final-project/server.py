@@ -263,7 +263,7 @@ def gene_list(parameters):
         contents = read_html_template("gene_calc.html").render(context=context)
         code = HTTPStatus.OK
     else:
-        contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
+        contents = handle_error(ENSEMBL_COMMUNICATION_ERROR)
         code = HTTPStatus.SERVICE_UNAVAILABLE
     return code, contents
 
