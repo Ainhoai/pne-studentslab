@@ -280,8 +280,6 @@ def gene_list(endpoint, parameters):
     return code, contents
 
 
-
-
 socketserver.TCPServer.allow_reuse_address = True
 
 
