@@ -20,10 +20,10 @@ RESOURCE_TO_ENSEMBL_REQUEST = {
     "/geneSeq": {"resource": "/sequence/id/", "params": "content-type=application/json"},
     "/geneInfo": {"resource": "/overlap/id/", "params": "content-type=application/json;feature=gene"},
     "/geneCalc": {"resource": "/sequence/id/", "params": "content-type=application/json"},
-    "/geneList": {"resource": "/info/assembly/", "params": "content-type=application/json"}
+    "/geneList": {"resource": "/sequence/id/", "params": "content-type=application/json"}
 }  # this is how we are going to request what we want to ensemble's page.
 
-RESOURCE_NOT_AVAILABLE_ERROR = "Resource not available" # both of these are just in case of error.
+RESOURCE_NOT_AVAILABLE_ERROR = "Resource not available"  # both of these are just in case of error.
 ENSEMBL_COMMUNICATION_ERROR = "Error in communication with the Ensembl server."
 
 
@@ -49,7 +49,6 @@ def server_request(server, url):
     except Exception:  # Comment
         error = True
     return error, data
-
 
 
 def handle_error(endpoint, message):
@@ -151,6 +150,7 @@ def gene_seq(endpoint, parameters):
         url = f"{request['resource']}{gene_id}?{request['params']}"
         error, data = server_request(ENSEMBL_SERVER, url)
         if not error:
+            print(data)
             bases = data['seq']
             context = {
                 'gene': gene,
@@ -201,31 +201,33 @@ def gene_info(endpoint, parameters):
 
 def gene_calc(endpoint, parameters):
     gene = parameters['gene'][0]
-    if gene is not None:
+    gene_id = get_id(gene)
+    print(f"Gene: {gene} - Gene ID: {gene_id}")
+    if gene_id is not None:
         request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
-        url = f"{request['resource']}{gene}?{request['params']}"
+        url = f"{request['resource']}{gene_id}?{request['params']}"
         error, data = server_request(ENSEMBL_SERVER, url)
         if not error:
-            sequence = data["seq"]
+            print(data)
+            sequence = data['seq']
             A = 0
             C = 0
             G = 0
             T = 0
             for b in sequence:
-                if "A" in sequence:
+                if b == "A":
                     A += 1
-                elif "C" in sequence:
+                elif b == "C":
                     C += 1
-                elif "G" in sequence:
+                elif b == "G":
                     G += 1
-                elif "T" in sequence:
+                elif b == "T":
                     T += 1
             total_length = A + C + G + T
-            base_A = (A / total_length) * 100
-            base_C = (C / total_length) * 100
-            base_G = (G / total_length) * 100
-            base_T = (T / total_length) * 100
-
+            base_A = round((A / total_length) * 100, 2)
+            base_C = round((C / total_length) * 100, 2)
+            base_G = round((G / total_length) * 100, 2)
+            base_T = round((T / total_length) * 100, 2)
 
             context = {
                 "gene": gene,
@@ -235,7 +237,7 @@ def gene_calc(endpoint, parameters):
                 "G": base_G,
                 "T": base_T
             }
-            contents = read_html_template("gene_info.html").render(context=context)
+            contents = read_html_template("gene_calc.html").render(context=context)
             code = HTTPStatus.OK
         else:
             contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
@@ -243,10 +245,39 @@ def gene_calc(endpoint, parameters):
         return code, contents
 
 
+def get_gene(gene):
+    resource = "/overlap/region/human/" + gene
+    params = 'content-type=application/json;format=condensed'
+    url = f"{resource}?{params}"
+    error, data = server_request(ENSEMBL_SERVER, url)
+    chromo = None
+    if not error:
+        chromo = data['chromo'][0]
+    return chromo
+
+
 def gene_list(endpoint, parameters):
-    pass
+    chromo = parameters["chromo"][0]
+    chromo = get_gene(chromo)
+    print(f"Chromo: {chromo} in gene")
+    if chromo is not None:
+        request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
+        url = f"{request['resource']}{chromo}?{request['params']}"
+        error, data = server_request(ENSEMBL_SERVER, url)
+        if not error:
+            print(data)
 
 
+        context = {
+            "chromo": chromo
+        }
+
+        contents = read_html_template("gene_list.html").render(context=context)
+        code = HTTPStatus.OK
+    else:
+        contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
+        code = HTTPStatus.SERVICE_UNAVAILABLE
+    return code, contents
 
 
 
