@@ -253,16 +253,22 @@ def gene_list(parameters):
     url = f"{endpoint}?{params}"
     error, data = server_request(ENSEMBL_SERVER, url)
     if not error:
+        print(data)
         data = data[0]
-        chromo = data["version"]
+        chromo = data["seq_region_name"]
         start = data["start"]
         end = data["end"]
-        print(data)
-
+        genes_within_range = []
+        gene_id = data["id"]
+        for c in gene_id:
+            if start <= gene_id <= end:
+                genes_within_range.append(c)
+            return genes_within_range
         context = {
             "chromo": chromo,
             "start": start,
             "end": end,
+            "genes": genes_within_range,
         }
         contents = read_html_template("gene_list.html").render(context=context)
         code = HTTPStatus.OK
