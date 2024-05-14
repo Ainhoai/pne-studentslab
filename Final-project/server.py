@@ -262,7 +262,7 @@ def gene_list(parameters):
         gene_id = data["id"]
         for gene_id in data:
             if start <= gene_id <= end:
-                genes_within_range.append(gene_id)
+                genes_within_range.append(gene)
             return genes_within_range
         context = {
             "chromo": chromo,
