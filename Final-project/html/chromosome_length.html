@@ -4,13 +4,8 @@
         <meta charset="UTF-8">
         <title>Chromosome Length</title>
     </head>
-    <body style="background-color: lightblue">
-        <h1>Chromosomes of {{context.specie}} have a length equal or bigger than: {{context.length}}</h1>
-        <ul>
-            {% for chromo in context.chromosomes %}
-            <li>{{chromo.name}}: {{chromo.length}}</li>
-            {% endfor %}
-        </ul>
+    <body style="background-color: #FF84BE">
+        <h2>Chromosomes of {{context.species}} have a length of: {{context.length}}</h2>
         <a href="/">Main page</a>
     </body>
 </html>

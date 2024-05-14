@@ -118,6 +118,7 @@ def chromosome_length(endpoint, parameters):
                 c_length = c["length"]
                 break
         context = {
+            "species": species,
             "chromo": chromo,
             "length": c_length
         }

@@ -4,57 +4,52 @@
         <meta charset="UTF-8">
         <title>Final-Project</title>
     </head>
-    <body style="background-color: lightyellow">
-        <h1>Browsing Human and Vertebrates genome</h1>
-        <h2>BASIC Level Services</h2>
+    <body style="background-color: #FC947E">
+        <h1><u>Browsing Human and Vertebrates genome</u></h1>
 
         <form action="/listSpecies" method="get">
-            <p>1) List of species in the genome database:</p>
-            <label>Limit:</label><input type="text" name="limit"><br>
-            <input type="submit" value="Send">
+            <h3><b>1) List of species in the genome database:</b></h3>
+            <label>Limit:</label><input type="text" name="limit"><input type="submit" value="Send">
         </form>
 
         <form action="/karyotype" method="get">
-            <p>2) Information about the karyotype:</p>
-            <label>Select the species:</label><input type="text" name="species"><br>
+            <h3><b>2) Information about the karyotype:</b></h3>
+            <label>Select the species:</label><input type="text" name="species">
             <input type="submit" value="Send">
         </form>
 
         <form action="/chromosomeLength" method="get">
-            <p>3) Calculation of a chromosome length:</p>
+            <h3><b>3) Calculation of a chromosome length:</b></h3>
             <label>Select the species:</label><input type="text" name="species"><br><br>
-            <label>Select a chromosome:</label><input type="text" name="chromo"><br>
+            <label>Select a chromosome:</label><input type="text" name="chromo">
             <input type="submit" value="Send">
         </form>
 
+        <form action="/geneSeq">
+            <h3><b>4) Human gene sequence:</b></h3>
+            <label>Select the gene: </label><input type="text" name="gene">
+            <input type="submit" value="Send">
+        </form>
 
-        <h2>MEDIUM Level Services</h2>
+        <form action="/geneInfo">
+            <h3><b>5) Information about the human gene:</b></h3>
+            <label>Select the gene: </label><input type="text" name="gene">
+            <input type="submit" value="Send">
+        </form>
 
-    <form action="/geneSeq">
-        <p>4) Human gene sequence:</p>
-        <label>Select the gene: </label><input type="text" name="gene"><br><br>
-        <input type="submit" value="Send">
-    </form>
+        <form action="/geneCalc">
+            <h3><b>6) Base percentage and base average of the human gene:</b></h3>
+            <label>Select the gene: </label><input type="text" name="gene">
+            <input type="submit" value="Send">
+        </form>
 
-    <form action="/geneInfo">
-        <p>5) Information about the human gene:</p>
-        <label>Select the gene: </label><input type="text" name="gene"><br><br>
-        <input type="submit" value="Send">
-    </form>
-    <form action="/geneCalc">
-        <p>6) Base percentage and base average of the human gene:</p>
-        <label>Select the gene: </label><input type="text" name="gene"><br><br>
-        <input type="submit" value="Send">
-    </form>
-
-    <form action="/geneList" method="get">
-        <p>7) Genes in chromosome from start to end:</p>
-        <label>Select the chromosome:</label><input type="text" name="chromo"><br><br>
-        <label>Select the start:</label><input type="text" name="start"><br><br>
-        <label>Select the end:</label><input type="text" name="end"><br><br>
-        <input type="submit" value="Send">
-    </form>
-
+        <form action="/geneList" method="get">
+            <h3><b>7) Genes in chromosome from start to end:</b></h3>
+            <label>Select the chromosome:</label><input type="text" name="chromo"><br><br>
+            <label>Select a starting point:</label><input type="text" name="start"><br><br>
+            <label>Select an end point:</label><input type="text" name="end">
+            <input type="submit" value="Send">
+        </form>
 
     </body>
 </html>
