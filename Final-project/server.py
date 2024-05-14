@@ -63,6 +63,7 @@ def list_species(endpoint, parameters):
     url = f"{request['resource']}?{request['params']}"
     error, data = server_request(ENSEMBL_SERVER, url)
     if not error:
+        print(data)
         limit = None
         if 'limit' in parameters:
             limit = int(parameters['limit'][0])
@@ -85,15 +86,13 @@ def list_species(endpoint, parameters):
 
 def karyotype(endpoint, parameters):
     request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
-    species = parameters["species"][0]
+    species = parameters['species'][0]
     url = f"{request['resource']}{species}?{request['params']}"
     error, data = server_request(ENSEMBL_SERVER, url)
-    print(data)
     if not error:
         context = {
-            "species": species,
-            "karyotype": data["karyotype"]
-
+            'species': species,
+            'karyotype': data['karyotype']
         }
         contents = read_html_template("karyotype.html").render(context=context)
         code = HTTPStatus.OK
