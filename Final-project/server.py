@@ -248,11 +248,15 @@ def gene_list(parameters):
     chromo = parameters["chromo"][0]
     start = int(parameters["start"][0])
     end = int(parameters["end"][0])
-    resource = f"/overlap/region/human {chromo}: {start}-{end}"
+    endpoint = f"/overlap/region/human/{chromo}:{start}-{end}"
     params = "content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon"
-    url = f"{resource}?{params}"
+    url = f"{endpoint}?{params}"
     error, data = server_request(ENSEMBL_SERVER, url)
     if not error:
+        data = data[0]
+        chromo = data["version"]
+        start = data["start"]
+        end = data["end"]
         print(data)
 
         context = {
@@ -260,10 +264,10 @@ def gene_list(parameters):
             "start": start,
             "end": end,
         }
-        contents = read_html_template("gene_calc.html").render(context=context)
+        contents = read_html_template("gene_list.html").render(context=context)
         code = HTTPStatus.OK
     else:
-        contents = handle_error(ENSEMBL_COMMUNICATION_ERROR)
+        contents = handle_error(endpoint, ENSEMBL_COMMUNICATION_ERROR)
         code = HTTPStatus.SERVICE_UNAVAILABLE
     return code, contents
 
