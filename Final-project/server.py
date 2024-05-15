@@ -14,7 +14,7 @@ PORT = 8080
 HTML_FOLDER = "html"
 ENSEMBL_SERVER = "rest.ensembl.org"
 RESOURCE_TO_ENSEMBL_REQUEST = {
-    '/listSpecies': {'resource': "/info/species", 'params': "content-type=application/json"},
+    '/listSpecies': {'resource': "/info/species/", 'params': "content-type=application/json"},
     "/karyotype":  {'resource': "/info/assembly/", 'params': "content-type=application/json"},
     "/chromosomeLength": {"resource": "/info/assembly/", 'params': "content-type=application/json"},
     "/geneSeq": {"resource": "/sequence/id/", "params": "content-type=application/json"},
@@ -85,13 +85,14 @@ def list_species(endpoint, parameters):
 
 def karyotype(endpoint, parameters):
     request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
-    species = parameters['species'][0]
+    species = parameters["species"][0]
     url = f"{request['resource']}{species}?{request['params']}"
     error, data = server_request(ENSEMBL_SERVER, url)
     if not error:
+        karyotype = data['karyotype']
         context = {
             'species': species,
-            'karyotype': data['karyotype']
+            'karyotype': karyotype
         }
         contents = read_html_template("karyotype.html").render(context=context)
         code = HTTPStatus.OK
