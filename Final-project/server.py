@@ -253,8 +253,8 @@ def gene_list(parameters):
         start = data["start"]
         end = data["end"]
         genes_list = []
-        for c in range(start, end + 1):
-            if "assembly_name" in data:
+        for gene in data:
+            if "assembly_name" in gene:
                 name = data["assembly_name"]
                 genes_list.append(name)
         context = {
