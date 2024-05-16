@@ -248,6 +248,7 @@ def gene_list(parameters):
     params = "content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon"
     url = f"{endpoint}?{params}"
     error, data = server_request(ENSEMBL_SERVER, url)
+    print(data)
     if not error:
         data = data[0]
         chromo = data["seq_region_name"]
