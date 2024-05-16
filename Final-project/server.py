@@ -4,7 +4,7 @@ import socketserver
 import termcolor
 from pathlib import Path
 import http.client
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, quote
 import jinja2
 import os
 import json
@@ -85,14 +85,15 @@ def list_species(endpoint, parameters):
 
 def karyotype(endpoint, parameters):
     request = RESOURCE_TO_ENSEMBL_REQUEST[endpoint]
-    species = parameters["species"][0]
+    species = quote(parameters["species"][0])
     url = f"{request['resource']}{species}?{request['params']}"
     error, data = server_request(ENSEMBL_SERVER, url)
     if not error:
         karyotype = data['karyotype']
+        species = species.replace("%20", " ")
         context = {
             'species': species,
-            'karyotype': karyotype
+            'karyotyp': karyotype
         }
         contents = read_html_template("karyotype.html").render(context=context)
         code = HTTPStatus.OK
