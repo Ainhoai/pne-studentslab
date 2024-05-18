@@ -257,8 +257,8 @@ def gene_list(parameters):
         end = data["end"]
         genes_list = []
         for gene in data:
-            if "assembly_name" in data:
-                name = data["assembly_name"]
+            if "external_name" in gene:
+                name = data["external_name"]
                 genes_list.append(name)
         context = {
             "chromo": chromo,
