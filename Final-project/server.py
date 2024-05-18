@@ -257,14 +257,14 @@ def gene_list(parameters):
         end = data["end"]
         genes_list = []
         for gene in data:
-            if "assembly_name" in gene:
-                name = gene["assembly_name"]
+            if "assembly_name" in data:
+                name = data["assembly_name"]
                 genes_list.append(name)
         context = {
             "chromo": chromo,
             "start": start,
             "end": end,
-            "gene_list": genes_list
+            "gene_list": genes_list[0]
         }
         contents = read_html_template("gene_list.html").render(context=context)
         code = HTTPStatus.OK
