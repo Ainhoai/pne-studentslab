@@ -17,19 +17,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         template = jinja2.Template(contents)
         return template
 
-    def server_request(self, server, url):
-        error = False
-        data = None
-        full_url = f"https://{server}{url}"
-        try:
-            response = requests.get(full_url)
-            response.raise_for_status()
-            data = response.json()
-        except requests.exceptions.RequestException as e:
-            error = True
-            print(f"Request error: {e}")
-        return error, data
-
     def handle_error(self, endpoint, message):
         template = self.read_html_template("error.html")
         return template.render(endpoint, message)
@@ -85,7 +72,17 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     # Placeholder methods for the endpoints
     def list_species(self, endpoint, parameters):
-        url = "/info/species/?content-type=application/json"
+        error = False
+        data = None
+        try:
+            response = requests.get(full_url)
+            response.raise_for_status()
+            data = response.json()
+        except requests.exceptions.RequestException as e:
+            error = True
+            print(f"Request error: {e}")
+        return error, data
+        url = "https://info/species/?content-type=application/json"
         error, data = self.server_request(ensemble, url)
         if not error:
             limit = None
@@ -104,7 +101,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     def karyotype(self, endpoint, parameters):
         species = quote(parameters["species"][0])
-        url = f"/info/assembly/{species}?content-type=application/json"
+        url = f"https://info/assembly/{species}?content-type=application/json"
         error, data = self.server_request(ensemble, url)
 
         if not error:
@@ -122,7 +119,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def chromosome_length(self, endpoint, parameters):
         species = parameters["species"][0]
         chromo = parameters["chromo"][0]
-        url = f"/info/assembly/{species}?content-type=application/json"
+        url = f"https://info/assembly/{species}?content-type=application/json"
         error, data = self.server_request(ensemble, url)
         if not error:
             chromosomes = data["top_level_region"]
@@ -140,13 +137,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     def gene_seq(self, endpoint, parameters):
         gene = parameters['gene'][0]
-        resource = f"/homology/symbol/human/{gene}"
-        params = 'content-type=application/json;format=condensed'
-        url = f"{resource}?{params}"
+        url = f"https://homology/symbol/human/{gene}?content-type=application/json;format=condensed"
         error, data = self.server_request(ensemble, url)
         if not error:
             gene_id = data['data'][0]['id']
-            url = f"/sequence/id/{gene_id}?content-type=application/json"
+            url = f"https://sequence/id/{gene_id}?content-type=application/json"
             error, data = self.server_request(ensemble, url)
             if not error:
                 bases = data['seq']
@@ -163,13 +158,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     def gene_info(self, endpoint, parameters):
         gene = parameters['gene'][0]
-        resource = f"/homology/symbol/human/{gene}"
-        params = 'content-type=application/json;format=condensed'
-        url = f"{resource}?{params}"
+        url = f"https://homology/symbol/human/{gene}?content-type=application/json;format=condensed"
         error, data = self.server_request(ensemble, url)
         if not error:
             gene_id = data['data'][0]['id']
-            url = f"/sequence/id/{gene_id}?content-type=application/json;feature=gene"
+            url = f"https://sequence/id/{gene_id}?content-type=application/json;feature=gene"
             error, data = self.server_request(ensemble, url)
             if not error:
                 data = data[0]
@@ -190,9 +183,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     def gene_calc(self, endpoint, parameters):
         gene = parameters['gene'][0]
-        resource = f"/homology/symbol/human/{gene}"
-        params = 'content-type=application/json;format=condensed'
-        url = f"{resource}?{params}"
+        url = f"https://homology/symbol/human/{gene}?content-type=application/json;format=condensed"
         error, data = self.server_request(ensemble, url)
         if not error:
             gene_id = data['data'][0]['id']
