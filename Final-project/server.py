@@ -8,7 +8,7 @@ import jinja2
 import requests
 
 PORT = 8080
-ensemble = "https://rest.ensemble.org"
+
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
     def read_html_template(self, file_name):
@@ -16,10 +16,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         contents = Path(file_path).read_text()
         template = jinja2.Template(contents)
         return template
-
-    def handle_error(self, endpoint, message):
-        template = self.read_html_template("error.html")
-        return template.render(endpoint, message)
 
     def do_GET(self):
         parsed_url = urlparse(self.path)
@@ -33,48 +29,48 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
 
         elif endpoint == "/listSpecies":
-            file_contents = self.list_species(endpoint, parameters)
-            self.send_response(200)
+            file_contents, code = self.list_species(parameters)
+            self.send_response(code)
 
         elif endpoint == "/karyotype":
-            file_contents = self.karyotype(endpoint, parameters)
-            self.send_response(200)
+            file_contents, code = self.karyotype(parameters)
+            self.send_response(code)
 
         elif endpoint == "/chromosomeLength":
-            file_contents = self.chromosome_length(endpoint, parameters)
-            self.send_response(200)
+            file_contents, code = self.chromosome_length(parameters)
+            self.send_response(code)
 
         elif endpoint == "/geneSeq":
-            file_contents = self.gene_seq(endpoint, parameters)
-            self.send_response(200)
+            file_contents, code = self.gene_seq(parameters)
+            self.send_response(code)
 
         elif endpoint == "/geneInfo":
-            file_contents = self.gene_info(endpoint, parameters)
-            self.send_response(200)
+            file_contents, code = self.gene_info(parameters)
+            self.send_response(code)
 
         elif endpoint == "/geneCalc":
-            file_contents = self.gene_calc(endpoint, parameters)
-            self.send_response(200)
+            file_contents, code = self.gene_calc(parameters)
+            self.send_response(code)
 
         elif endpoint == "/geneList":
-            file_contents = self.gene_list(endpoint, parameters)
-            self.send_response(200)
+            file_contents, code = self.gene_list(parameters)
+            self.send_response(code)
 
         else:
-            file_contents = self.handle_error(endpoint, "Resource not available")
+            file_contents = self.read_html_template("error.html")
             self.send_response(404)
 
         contents_bytes = file_contents.encode()
         self.send_header('Content-Type', "text/html")
-        self.send_header('Content-Length', str(len(contents_bytes)))
+        self.send_header('Content-Length', len(str(contents_bytes)))
         self.end_headers()
         self.wfile.write(contents_bytes)
 
     # Placeholder methods for the endpoints
-    def list_species(self, endpoint, parameters):
+    def list_species(self, parameters):
         try:
-            url = "/info/species/?content-type=application/json"
-            response = requests.get(ensemble, url)
+            url = "https://rest.ensemble.org/info/species/?content-type=application/json"
+            response = requests.get(url)
             response.raise_for_status()
             data = response.json()
 
@@ -90,16 +86,16 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
-            file_contents = self.handle_error(endpoint, "Error in communication with the Ensembl server")
+            file_contents = self.read_html_template("error.html")
             code = HTTPStatus.SERVICE_UNAVAILABLE
 
         return code, file_contents
 
-    def karyotype(self, endpoint, parameters):
+    def karyotype(self, parameters):
         try:
             species = parameters.get('species', [''])[0]
-            url = f"/info/assembly/{quote(species)}?content-type=application/json"
-            response = requests.get(ensemble, url)
+            url = f"https://rest.ensemble.org/info/assembly/{quote(species)}?content-type=application/json"
+            response = requests.get(url)
             response.raise_for_status()
             data = response.json()
 
@@ -111,18 +107,18 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
-            file_contents = self.handle_error(endpoint, "Error in communicating with ensemble.")
+            file_contents = self.read_html_template("error.html")
             code = HTTPStatus.SERVICE_UNAVAILABLE
 
         return code, file_contents
 
-    def chromosome_length(self, endpoint, parameters):
+    def chromosome_length(self, parameters):
         try:
             species = parameters.get('species', [''])[0]
             chromo = parameters.get("chromo", [''])[0]
-            url = f"/info/assembly/{species}?content-type=application/json"
+            url = f"https://rest.ensemble.org/info/assembly/{species}?content-type=application/json"
 
-            response = requests.get(ensemble, url)
+            response = requests.get(url)
             response.raise_for_status()
             data = response.json()
 
@@ -138,21 +134,21 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
-            file_contents = self.handle_error(endpoint, "Error in communicating with ensemble.")
+            file_contents = self.read_html_template("error.html")
             code = HTTPStatus.SERVICE_UNAVAILABLE
         return code, file_contents
 
-    def gene_seq(self, endpoint, parameters):
+    def gene_seq(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
-            response = requests.get(ensemble, url)
+            url = f"https://rest.ensemble.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
+            response = requests.get(url)
             response.raise_for_status()
             data = response.json()
 
             gene_id = data['data'][0]['id']
-            url = f"/sequence/id/{gene_id}?content-type=application/json"
-            response = requests.get(ensemble, url)
+            url = f"https://rest.ensemble.org/sequence/id/{gene_id}?content-type=application/json"
+            response = requests.get(url)
             response.raise_for_status()
             data = response.json()
 
@@ -162,21 +158,21 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
-            file_contents = self.handle_error(endpoint, "Error in communicating with ensemble.")
+            file_contents = self.read_html_template("error.html")
             code = HTTPStatus.SERVICE_UNAVAILABLE
 
         return code, file_contents
 
-    def gene_info(self, endpoint, parameters):
+    def gene_info(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
-            response = requests.get(ensemble, url)
+            url = f"https://rest.ensemble.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
+            response = requests.get(url)
             response.raise_for_status()
             data = response.json()
 
             gene_id = data['data'][0]['id']
-            url = f"/sequence/id/{gene_id}?content-type=application/json;feature=gene"
+            url = f"https://rest.ensemble.org/sequence/id/{gene_id}?content-type=application/json;feature=gene"
             response = requests.get(url)
             response.raise_for_status()
             data = response.json()
@@ -190,22 +186,22 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
-            file_contents = self.handle_error(endpoint, "Error in communicating with ensemble.")
+            file_contents = self.read_html_template("error.html")
             code = HTTPStatus.SERVICE_UNAVAILABLE
 
         return code, file_contents
 
-    def gene_calc(self, endpoint, parameters):
+    def gene_calc(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
-            response = requests.get(ensemble, url)
+            url = f"https://rest.ensemble.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
+            response = requests.get(url)
             response.raise_for_status()
             data = response.json()
 
             gene_id = data['data'][0]['id']
-            url = f"/sequence/id/{gene_id}?content-type=application/json"
-            response = requests.get(ensemble, url)
+            url = f"https://rest.ensemble.org/sequence/id/{gene_id}?content-type=application/json"
+            response = requests.get(url)
             response.raise_for_status()
             data = response.json()
 
@@ -226,18 +222,18 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
-            file_contents = self.handle_error(endpoint, "Error in communicating with ensemble.")
+            file_contents = self.read_html_template("error.html")
             code = HTTPStatus.SERVICE_UNAVAILABLE
         return file_contents, code
 
-    def gene_list(self, endpoint, parameters):
+    def gene_list(self, parameters):
         try:
             chromo = parameters["chromo"][0]
             start = int(parameters["start"][0])
             end = int(parameters["end"][0])
 
-            url = f"/overlap/region/human/{chromo}:{start}-{end}?content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon"
-            response = requests.get(ensemble, url)
+            url = f"https://rest.ensemble.org/overlap/region/human/{chromo}:{start}-{end}?content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon"
+            response = requests.get(url)
             response.raise_for_status()
             data = response.json()
 
@@ -252,7 +248,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
-            file_contents = self.handle_error(endpoint, "Error in communicating with ensemble.")
+            file_contents = self.read_html_template("error.html")
             code = HTTPStatus.SERVICE_UNAVAILABLE
 
         return file_contents, code
