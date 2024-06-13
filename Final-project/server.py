@@ -13,11 +13,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def read_html_template(self, file_name):
         file_path = Path("html") / file_name
         try:
-            contents = Path(file_path).read_text()
+            file_contents = Path(file_path).read_text()
         except FileNotFoundError:
             self.send_error(HTTPStatus.NOT_FOUND, "File Not Found")
             return None
-        template = jinja2.Template(contents)
+        template = jinja2.Template(file_contents)
         return template
 
     def do_GET(self):
@@ -25,6 +25,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         endpoint = parsed_url.path
         parameters = parse_qs(parsed_url.query)
         termcolor.cprint(self.requestline, 'green')
+        code = HTTPStatus.OK
 
         if endpoint == "/":
             file_path = "html/index.html"
@@ -41,43 +42,40 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         elif endpoint == "/karyotype":
             file_contents, code = self.karyotype(parameters)
-            self.send_response(code)
 
         elif endpoint == "/chromosomeLength":
             file_contents, code = self.chromosome_length(parameters)
-            self.send_response(code)
 
         elif endpoint == "/geneSeq":
             file_contents, code = self.gene_seq(parameters)
+            code = int(code)
             self.send_response(code)
 
         elif endpoint == "/geneInfo":
             file_contents, code = self.gene_info(parameters)
-            self.send_response(code)
 
         elif endpoint == "/geneCalc":
             file_contents, code = self.gene_calc(parameters)
-            self.send_response(code)
 
         elif endpoint == "/geneList":
             file_contents, code = self.gene_list(parameters)
-            self.send_response(code)
 
         else:
             file_contents = self.read_html_template("error.html")
             self.send_response(404)
 
+        self.send_response(code)
         contents_bytes = file_contents.encode()
         self.send_header('Content-Type', "text/html")
-        self.send_header('Content-Length', len(str(contents_bytes)))
+        self.send_header('Content-Length', str(len(contents_bytes)))
         self.end_headers()
         self.wfile.write(contents_bytes)
 
     # Placeholder methods for the endpoints
     def list_species(self, parameters):
         try:
-            url = f"https://rest.ensembl.org/info/species"
-            headers = {"Content-Type": "application/json"}
+            url = f"https://rest.ensembl.org/info/species?"
+            headers = {"content-type": "application/json"}
             response = requests.get(url, headers=headers)
             data = response.json()
 
