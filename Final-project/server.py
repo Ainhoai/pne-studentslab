@@ -169,7 +169,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         error, data = self.server_request(ensemble, url)
         if not error:
             gene_id = data['data'][0]['id']
-            url = f"/sequence/id/{gene_id}?content-type=application/json;feature=gene""
+            url = f"/sequence/id/{gene_id}?content-type=application/json;feature=gene"
             error, data = self.server_request(ensemble, url)
             if not error:
                 data = data[0]
