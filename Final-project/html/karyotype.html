@@ -5,11 +5,9 @@
         <title>Karyotype</title>
     </head>
     <body style="background-color: #42E768">
-        <h2>The karyotype of the {{context.species}}:</h2>
+        <h2>The karyotype of the {{species}}:</h2>
         <p>The species chromosomes are:</p>
-        {% for chromosome in context.karyotype %}
-        <p>{{chromosome}}</p>
-        {% endfor %}
+        <p>{{karyptype}}</p>
         <a href="/">Main page</a>
     </body>
 </html>

@@ -3,17 +3,20 @@ from http import HTTPStatus
 import socketserver
 import termcolor
 from pathlib import Path
-from urllib.parse import urlparse, parse_qs, quote
+from urllib.parse import urlparse, parse_qs
 import jinja2
 import requests
 
 PORT = 8080
 
-
 class RequestHandler(http.server.BaseHTTPRequestHandler):
     def read_html_template(self, file_name):
         file_path = Path("html") / file_name
-        contents = Path(file_path).read_text()
+        try:
+            contents = Path(file_path).read_text()
+        except FileNotFoundError:
+            self.send_error(HTTPStatus.NOT_FOUND, "File Not Found")
+            return None
         template = jinja2.Template(contents)
         return template
 
@@ -24,9 +27,13 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         termcolor.cprint(self.requestline, 'green')
 
         if endpoint == "/":
-            file_path = "/index.html"
-            file_contents = Path(file_path).read_text()
-            self.send_response(200)
+            file_path = "html/index.html"
+            try:
+                file_contents = Path(file_path).read_text()
+                self.send_response(200)
+            except FileNotFoundError:
+                self.send_error(HTTPStatus.NOT_FOUND, "File Not Found")
+                return
 
         elif endpoint == "/listSpecies":
             file_contents, code = self.list_species(parameters)
@@ -69,19 +76,20 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     # Placeholder methods for the endpoints
     def list_species(self, parameters):
         try:
-            url = "https://rest.ensemble.org/info/species/?content-type=application/json"
-            response = requests.get(url)
-            response.raise_for_status()
+            url = f"https://rest.ensembl.org/info/species"
+            headers = {"Content-Type": "application/json"}
+            response = requests.get(url, headers=headers)
             data = response.json()
 
             species = data.get('species')
+            name_species = []
             limit = None
             if 'limit' in parameters:
                 limit = int(parameters['limit'][0])
                 for specie in species[:limit]:
                     name_species = specie['display_name']
 
-            file_contents = self.read_html_template("species.html").render(number_of_species=len(species), limit=limit, name_species=name_species)
+            file_contents = self.read_html_template("species.html").render(species=species, number_of_species=len(species), limit=limit, name_species=name_species)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -93,16 +101,14 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     def karyotype(self, parameters):
         try:
-            species = parameters.get('species', [''])[0]
-            url = f"https://rest.ensemble.org/info/assembly/{quote(species)}?content-type=application/json"
-            response = requests.get(url)
-            response.raise_for_status()
+            species = parameters.get('species')[0]
+            url = f"https://rest.ensembl.org/info/assembly/{species}"
+            headers = {"Content-Type": "application/json"}
+            response = requests.get(url, headers=headers)
             data = response.json()
+            karyotype = data["karyotype"]
 
-            karyotype = data.get("karyotype")
-            species_name = species.replace("%20", " ")
-
-            file_contents = self.read_html_template("karyotype.html").render(species=species_name, karyotype=karyotype)
+            file_contents = self.read_html_template("karyotype.html").render(species=species, karyotype=karyotype)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -114,12 +120,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     def chromosome_length(self, parameters):
         try:
-            species = parameters.get('species', [''])[0]
-            chromo = parameters.get("chromo", [''])[0]
-            url = f"https://rest.ensemble.org/info/assembly/{species}?content-type=application/json"
-
-            response = requests.get(url)
-            response.raise_for_status()
+            species = parameters.get('species')[0]
+            chromo = parameters.get("chromo")[0]
+            url = f"/rest.ensembl.org/info/assembly/{species}"
+            headers = {"Content-Type": "application/json"}
+            response = requests.get(url, headers=headers)
             data = response.json()
 
             chromosomes = data.get("top_level_region", [])
@@ -141,15 +146,13 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_seq(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"https://rest.ensemble.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
+            url = f"/rest.ensembl.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
             response = requests.get(url)
-            response.raise_for_status()
             data = response.json()
 
             gene_id = data['data'][0]['id']
-            url = f"https://rest.ensemble.org/sequence/id/{gene_id}?content-type=application/json"
+            url = f"/rest.ensembl.org/sequence/id/{gene_id}?content-type=application/json"
             response = requests.get(url)
-            response.raise_for_status()
             data = response.json()
 
             bases = data['seq']
@@ -166,16 +169,15 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_info(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"https://rest.ensemble.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
+            url = f"https://rest.ensembl.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
             response = requests.get(url)
-            response.raise_for_status()
             data = response.json()
 
             gene_id = data['data'][0]['id']
-            url = f"https://rest.ensemble.org/sequence/id/{gene_id}?content-type=application/json;feature=gene"
+            url = f"https://rest.ensembl.org/sequence/id/{gene_id}?content-type=application/json;feature=gene"
             response = requests.get(url)
-            response.raise_for_status()
             data = response.json()
+
             data = data[0]
             start = data["start"]
             end = data["end"]
@@ -194,15 +196,13 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_calc(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"https://rest.ensemble.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
+            url = f"https://rest.ensembl.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
             response = requests.get(url)
-            response.raise_for_status()
             data = response.json()
 
             gene_id = data['data'][0]['id']
-            url = f"https://rest.ensemble.org/sequence/id/{gene_id}?content-type=application/json"
+            url = f"https://rest.ensembl.org/sequence/id/{gene_id}?content-type=application/json"
             response = requests.get(url)
-            response.raise_for_status()
             data = response.json()
 
             sequence = data['seq']
@@ -232,9 +232,8 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             start = int(parameters["start"][0])
             end = int(parameters["end"][0])
 
-            url = f"https://rest.ensemble.org/overlap/region/human/{chromo}:{start}-{end}?content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon"
+            url = f"https://rest.ensembl.org/overlap/region/human/{chromo}:{start}-{end}?content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon"
             response = requests.get(url)
-            response.raise_for_status()
             data = response.json()
 
             genes_list = []
