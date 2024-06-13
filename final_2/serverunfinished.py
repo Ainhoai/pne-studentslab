@@ -311,6 +311,8 @@ class MyHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             code, contents = gene_calc(endpoint, parameters)
         elif endpoint == "/geneList":
             code, contents = gene_list(parameters)
+        elif endpoint == "/sequence":
+            code, contents = sequence(parameters)
         else:
             contents = handle_error(endpoint, RESOURCE_NOT_AVAILABLE_ERROR)
             code = HTTPStatus.NOT_FOUND
