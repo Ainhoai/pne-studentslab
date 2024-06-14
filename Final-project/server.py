@@ -9,16 +9,14 @@ import requests
 
 PORT = 8080
 
+
 class RequestHandler(http.server.BaseHTTPRequestHandler):
     def read_html_template(self, file_name):
+
         file_path = Path("html") / file_name
-        try:
-            file_contents = Path(file_path).read_text()
-        except FileNotFoundError:
-            self.send_error(HTTPStatus.NOT_FOUND, "File Not Found")
-            return None
-        template = jinja2.Template(file_contents)
-        return template
+        file_contents = Path(file_path).read_text()
+        file_contents = jinja2.Template(file_contents)
+        return file_contents
 
     def do_GET(self):
         parsed_url = urlparse(self.path)
@@ -38,7 +36,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         elif endpoint == "/listSpecies":
             file_contents, code = self.list_species(parameters)
-            self.send_response(code)
 
         elif endpoint == "/karyotype":
             file_contents, code = self.karyotype(parameters)
@@ -48,8 +45,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         elif endpoint == "/geneSeq":
             file_contents, code = self.gene_seq(parameters)
-            code = int(code)
-            self.send_response(code)
 
         elif endpoint == "/geneInfo":
             file_contents, code = self.gene_info(parameters)
@@ -80,14 +75,16 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             data = response.json()
 
             species = data.get('species')
-            name_species = []
+            names = []
             limit = None
             if 'limit' in parameters:
                 limit = int(parameters['limit'][0])
                 for specie in species[:limit]:
-                    name_species = specie['display_name']
+                    names = specie['display_name']
 
-            file_contents = self.read_html_template("species.html").render(species=species, number_of_species=len(species), limit=limit, name_species=name_species)
+            file_contents = self.read_html_template("species.html").render(species=species,
+                                                                           number_of_species=len(species), limit=limit,
+                                                                           name_species=names)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -132,7 +129,8 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                     c_length = c["length"]
                     break
 
-            file_contents = self.read_html_template("chromosome_length.html").render(species=species, chromo=chromo, length=c_length)
+            file_contents = self.read_html_template("chromosome_length.html").render(species=species, chromo=chromo,
+                                                                                     length=c_length)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -144,12 +142,12 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_seq(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"/rest.ensembl.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
+            url = f"http://rest.ensembl.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
             response = requests.get(url)
             data = response.json()
 
             gene_id = data['data'][0]['id']
-            url = f"/rest.ensembl.org/sequence/id/{gene_id}?content-type=application/json"
+            url = f"http://rest.ensembl.org/sequence/id/{gene_id}?content-type=application/json"
             response = requests.get(url)
             data = response.json()
 
@@ -167,7 +165,8 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_info(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"https://rest.ensembl.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
+            url = (f"https://rest.ensembl.org/homology/symbol/human/{gene}"
+                   f"?content-type=application/json;format=condensed")
             response = requests.get(url)
             data = response.json()
 
@@ -175,13 +174,15 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             url = f"https://rest.ensembl.org/sequence/id/{gene_id}?content-type=application/json;feature=gene"
             response = requests.get(url)
             data = response.json()
+            print(data)
 
-            data = data[0]
             start = data["start"]
             end = data["end"]
             length = end - start
             chromosome_name = data["assembly_name"]
-            file_contents = self.read_html_template("gene_info.html").render(gene=gene, start=start, length=length, gene_if=gene_id, chromosome_name=chromosome_name)
+            file_contents = self.read_html_template("gene_info.html").render(gene=gene, start=start, length=length,
+                                                                             gene_if=gene_id,
+                                                                             chromosome_name=chromosome_name)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -194,7 +195,8 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_calc(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"https://rest.ensembl.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
+            url = (f"https://rest.ensembl.org/homology/symbol/human/{gene}?"
+                   f"content-type=application/json;format=condensed")
             response = requests.get(url)
             data = response.json()
 
@@ -215,7 +217,9 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                 G = round((nucleotide_counts['G'] / total_length) * 100, 2)
                 T = round((nucleotide_counts['T'] / total_length) * 100, 2)
 
-            file_contents = self.read_html_template("gene_calc.html").render(gene=gene,total_length=total_length, A=A, C=C, G=G, T=T)
+            file_contents = self.read_html_template("gene_calc.html").render(gene=gene,
+                                                                             total_length=total_length, A=A,
+                                                                             C=C, G=G, T=T)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -230,7 +234,8 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             start = int(parameters["start"][0])
             end = int(parameters["end"][0])
 
-            url = f"https://rest.ensembl.org/overlap/region/human/{chromo}:{start}-{end}?content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon"
+            url = (f"https://rest.ensembl.org/overlap/region/human/{chromo}:{start}-{end}"
+                   f"?content-type=application/json;feature=gene;feature=transcript;feature=cds;feature=exon")
             response = requests.get(url)
             data = response.json()
 
@@ -240,7 +245,8 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                     name = gene["external_name"]
                     genes_list.append(name)
 
-            file_contents = self.read_html_template("gene_list.html").render(chromo=chromo, start=start, end=end, gene_list=genes_list)
+            file_contents = self.read_html_template("gene_list.html").render(chromo=chromo, start=start, end=end,
+                                                                             gene_list=genes_list)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -258,5 +264,3 @@ with socketserver.TCPServer(("", PORT), RequestHandler) as httpd:
     except KeyboardInterrupt:
         print("Stopped by the user")
         httpd.server_close()
-
-
