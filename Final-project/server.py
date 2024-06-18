@@ -100,15 +100,14 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             if "limit" in parameters:
                 limit = parameters.get("limit")[0]
                 if limit is not None:
-                    limit_value = int(limit)
-                    limit_name_species = name_species[:limit_value]
+                    limit_name_species = name_species[:int(limit)]
                 else:
                     limit_name_species = name_species
 
             context = {
                 'number_of_species': len(species),
-                'limit': limit_name_species,
-                'name_species': name_species
+                'limit': limit,
+                'name_species': limit_name_species,
             }
 
             file_contents = self.read_html_template("species.html").render(context=context)
@@ -205,23 +204,24 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             data = response.json()
 
             gene_id = data['id']
-            url = f"https://rest.ensembl.org/sequence/id/{gene_id}?"
-            headers = {"Content-Type": "application/json;format=gene"}
+            url = f"https://rest.ensembl.org/overlap/id/{gene_id}?feature=gene;"
+            headers = {"Content-Type": "application/json"}
             response = requests.get(url, headers=headers)
             data = response.json()
+            print(data)
 
-            start = data["start"]
-            end = data["end"]
+            start = data[0]["start"]
+            end = data[0]["end"]
             length = end - start
-            chromosome_name = data["seq_region_name"]
+            chromosome_name = data[0]["seq_region_name"]
             context = {"gene": gene,
                        "start": start,
                        "length": length,
                        "gene_id": gene_id,
                        "chromosome_name": chromosome_name}
+
             file_contents = self.read_html_template("gene_info.html").render(context=context)
             code = HTTPStatus.OK
-
         except KeyError:
             file_contents = self.read_html_template("error.html")
             code = HTTPStatus.SERVICE_UNAVAILABLE
