@@ -5,11 +5,11 @@
     <title>Chromosome genes: </title>
 </head>
 <body style="background-color: #EEFF84">
-        <h2> For chromosome {{chromo}}</h2>
-        <p>Starting from gene {{start}} to gene {{end}} in the chromosome {{chromo}}.</p>
+        <h2> For chromosome {{context.chromo}}</h2>
+        <p>Starting from gene {{context.start}} to gene {{context.end}} in the chromosome {{context.chromo}}.</p>
         <p>The names of the genes in the chromosome are:</p>
         <ul>
-            <li>{{gene_list}} </li>
+            <li>{{context.gene_list}} </li>
         </ul>
         <a href="/">Main page</a>
     </body>

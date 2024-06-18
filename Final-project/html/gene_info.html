@@ -5,13 +5,13 @@
         <title>Gene information</title>
     </head>
     <body style="background-color: #D684FF">
-        <h2>The following information of {{gene}} is provided below: </h2>
+        <h2>The following information of {{context.gene}} is provided below: </h2>
         <ul>
-        <li>Start: {{start}}</li>
-        <li>End: {{end}}</li>
-        <li>Length: {{length}}</li>
-        <li>ID: {{gene_id}}</li>
-        <li>Chromosome name: {{chromosome_name}}</li>
+        <li>Start: {{context.start}}</li>
+        <li>End: {{context.end}}</li>
+        <li>Length: {{context.length}}</li>
+        <li>ID: {{context.gene_id}}</li>
+        <li>Chromosome name: {{context.chromosome_name}}</li>
         </ul>
         <a href="/">Main page</a>
     </body>
