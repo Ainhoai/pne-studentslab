@@ -103,6 +103,9 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                     limit_name_species = name_species[:int(limit)]
                 else:
                     limit_name_species = name_species
+            else:
+                limit = "No limit has been selected"
+                limit_name_species = name_species
 
             context = {
                 'number_of_species': len(species),
