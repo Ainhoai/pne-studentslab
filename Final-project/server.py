@@ -12,7 +12,6 @@ PORT = 8080
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
     def read_html_template(self, file_name):
-
         file_path = Path("html") / file_name
         file_contents = Path(file_path).read_text()
         file_contents = jinja2.Template(file_contents)
@@ -74,17 +73,22 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             response = requests.get(url, headers=headers)
             data = response.json()
 
-            species = data.get('species')
-            names = []
-            limit = None
-            if 'limit' in parameters:
-                limit = int(parameters['limit'][0])
-                for specie in species[:limit]:
-                    names = specie['display_name']
+            name_species = []
+            species = data['species']
+            for specie in species:
+                name_species.append(specie['display_name'])
+            limit = parameters["limit"]
+            if limit is not None:
+                limit_name_species = name_species[:int(limit)]
+            else:
+                limit_name_species = name_species
 
-            file_contents = self.read_html_template("species.html").render(species=species,
-                                                                           number_of_species=len(species), limit=limit,
-                                                                           name_species=names)
+            context = {
+                'number_of_species': len(species),
+                'limit': limit_name_species,
+                'name_species': name_species}
+
+            file_contents = self.read_html_template("species.html").render(context=context)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -102,8 +106,10 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             response = requests.get(url, headers=headers)
             data = response.json()
             karyotype = data["karyotype"]
+            context = {"species": species,
+                       "karyotype": karyotype}
 
-            file_contents = self.read_html_template("karyotype.html").render(species=species, karyotype=karyotype)
+            file_contents = self.read_html_template("karyotype.html").render(context=context)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -128,9 +134,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                 if c["name"] == chromo:
                     c_length = c["length"]
                     break
+            context = {"species": species,
+                       "chromo": chromo,
+                       "length": c_length}
 
-            file_contents = self.read_html_template("chromosome_length.html").render(species=species, chromo=chromo,
-                                                                                     length=c_length)
+            file_contents = self.read_html_template("chromosome_length.html").render(context=context)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -142,17 +150,21 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_seq(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"http://rest.ensembl.org/homology/symbol/human/{gene}?content-type=application/json;format=condensed"
-            response = requests.get(url)
+            url = f"http://rest.ensembl.org/homology/symbol/human/{gene}"
+            headers = {"Content-Type": "application/json;format=condensed"}
+            response = requests.get(url, headers=headers)
             data = response.json()
 
             gene_id = data['data'][0]['id']
             url = f"http://rest.ensembl.org/sequence/id/{gene_id}?content-type=application/json"
-            response = requests.get(url)
+            headers = {"Content-Type": "application/json;format=condensed"}
+            response = requests.get(url, headers=headers)
             data = response.json()
 
             bases = data['seq']
-            file_contents = self.read_html_template("gene_seq.html").render(gene=gene, bases=bases)
+            context = {"gene": gene,
+                       "bases": bases}
+            file_contents = self.read_html_template("gene_seq.html").render(context=context)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -165,14 +177,15 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_info(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = (f"https://rest.ensembl.org/homology/symbol/human/{gene}"
-                   f"?content-type=application/json;format=condensed")
-            response = requests.get(url)
+            url = f"https://rest.ensembl.org/homology/symbol/human/{gene}"
+            headers = {"Content-Type": "application/json;format=condensed"}
+            response = requests.get(url, headers=headers)
             data = response.json()
 
             gene_id = data['data'][0]['id']
-            url = f"https://rest.ensembl.org/sequence/id/{gene_id}?content-type=application/json;feature=gene"
-            response = requests.get(url)
+            url = f"https://rest.ensembl.org/sequence/id/{gene_id}"
+            headers = {"Content-Type": "application/json;format=gene"}
+            response = requests.get(url, headers=headers)
             data = response.json()
             print(data)
 
@@ -180,9 +193,12 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             end = data["end"]
             length = end - start
             chromosome_name = data["assembly_name"]
-            file_contents = self.read_html_template("gene_info.html").render(gene=gene, start=start, length=length,
-                                                                             gene_if=gene_id,
-                                                                             chromosome_name=chromosome_name)
+            context = {"gene": gene,
+                       "start": start,
+                       "length": length,
+                       "gene_id": gene_id,
+                       "chromosome_name": chromosome_name}
+            file_contents = self.read_html_template("gene_info.html").render(context=context)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
@@ -195,14 +211,15 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_calc(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = (f"https://rest.ensembl.org/homology/symbol/human/{gene}?"
-                   f"content-type=application/json;format=condensed")
-            response = requests.get(url)
+            url = f"https://rest.ensembl.org/homology/symbol/human/{gene}"
+            headers = {"Content-Type": "application/json;format=condensed"}
+            response = requests.get(url, headers=headers)
             data = response.json()
 
             gene_id = data['data'][0]['id']
-            url = f"https://rest.ensembl.org/sequence/id/{gene_id}?content-type=application/json"
-            response = requests.get(url)
+            url = f"https://rest.ensembl.org/sequence/id/{gene_id}"
+            headers = {"Content-Type": "application/json;format=gene"}
+            response = requests.get(url, headers=headers)
             data = response.json()
 
             sequence = data['seq']
@@ -217,9 +234,14 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                 G = round((nucleotide_counts['G'] / total_length) * 100, 2)
                 T = round((nucleotide_counts['T'] / total_length) * 100, 2)
 
-            file_contents = self.read_html_template("gene_calc.html").render(gene=gene,
-                                                                             total_length=total_length, A=A,
-                                                                             C=C, G=G, T=T)
+            context = {"gene": gene,
+                       "total_length": total_length,
+                       "A": A,
+                       "C": C,
+                       "G": G,
+                       "T": T}
+
+            file_contents = self.read_html_template("gene_calc.html").render(context=context)
             code = HTTPStatus.OK
 
         except requests.exceptions.RequestException as e:
