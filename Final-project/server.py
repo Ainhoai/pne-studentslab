@@ -96,14 +96,14 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             species = data['species']
             for specie in species:
                 name_species.append(specie['display_name'])
-            limit_name_species = name_species
+            limit_name_species = []
             if "limit" in parameters:
                 limit = parameters.get("limit")[0]
-                try:
+                if limit is not None:
                     limit_value = int(limit)
                     limit_name_species = name_species[:limit_value]
-                except (ValueError, TypeError):
-                    pass
+                else:
+                    limit_name_species = name_species
 
             context = {
                 'number_of_species': len(species),
@@ -127,6 +127,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             headers = {"Content-Type": "application/json"}
             response = requests.get(url, headers=headers)
             data = response.json()
+            print(data)
             karyotype = data["karyotype"]
 
             context = {"species": species,
@@ -150,12 +151,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             data = response.json()
 
             chromosomes = data["top_level_region"]
-            c_length = []
+            c_length = None
             for c in chromosomes:
-                if c["name"] == chromo and c["coord_system"] == "chromo":
-                    c_length.append(c["length"])
-                    if c_length:
-                        return c_length[0]
+                if c["name"] == chromo:
+                    c_length = c["length"]
+                    break
 
             context = {"species": species,
                        "chromo": chromo,
@@ -172,20 +172,21 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_seq(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"http://rest.ensembl.org/homology/symbol/human/{gene}?"
+            url = f"https://rest.ensembl.org/lookup/symbol/homo_sapiens/{gene}?"
             headers = {"Content-Type": "application/json;format=condensed"}
             response = requests.get(url, headers=headers)
             data = response.json()
 
-            gene_id = data['data'][0]['id']
-            url = f"http://rest.ensembl.org/sequence/id/{gene_id}?"
-            headers = {"Content-Type": "application/json"}
+            gene_id = data['id']
+            url = f"https://rest.ensembl.org/sequence/id/{gene_id}?"
+            headers = {"Content-Type": "application/json;format=gene"}
             response = requests.get(url, headers=headers)
             data = response.json()
 
             bases = data['seq']
             context = {"gene": gene,
                        "bases": bases}
+
             file_contents = self.read_html_template("gene_seq.html").render(context=context)
             code = HTTPStatus.OK
 
@@ -201,18 +202,18 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             url = f"https://rest.ensembl.org/lookup/symbol/homo_sapiens/{gene}?"
             headers = {"Content-Type": "application/json;format=condensed"}
             response = requests.get(url, headers=headers)
-            data = response.get("id")
+            data = response.json()
 
+            gene_id = data['id']
             url = f"https://rest.ensembl.org/sequence/id/{gene_id}?"
             headers = {"Content-Type": "application/json;format=gene"}
             response = requests.get(url, headers=headers)
             data = response.json()
-            print(data)
 
             start = data["start"]
             end = data["end"]
             length = end - start
-            chromosome_name = data["assembly_name"]
+            chromosome_name = data["seq_region_name"]
             context = {"gene": gene,
                        "start": start,
                        "length": length,
@@ -230,12 +231,12 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def gene_calc(self, parameters):
         try:
             gene = parameters.get('gene')[0]
-            url = f"https://rest.ensembl.org/lookup/symbol/homosapiens/{gene}?"
+            url = f"https://rest.ensembl.org/lookup/symbol/homo_sapiens/{gene}?"
             headers = {"Content-Type": "application/json;format=condensed"}
             response = requests.get(url, headers=headers)
             data = response.json()
 
-            gene_id = data['data'][0]['id']
+            gene_id = data['id']
             url = f"https://rest.ensembl.org/sequence/id/{gene_id}?"
             headers = {"Content-Type": "application/json;format=gene"}
             response = requests.get(url, headers=headers)
@@ -281,7 +282,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             genes_list = []
             for gene in data:
                 if "external_name" in gene:
-                    name = gene["external_name"]
+                    name = gene["assembly_name"]
                     genes_list.append(name)
 
             context = {"chromo": chromo,
