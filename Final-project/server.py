@@ -96,7 +96,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             species = data['species']
             for specie in species:
                 name_species.append(specie['display_name'])
-            limit_name_species = []
             if "limit" in parameters:
                 limit = parameters.get("limit")[0]
                 if limit is not None:
