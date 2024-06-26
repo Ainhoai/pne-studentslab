@@ -109,8 +109,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             context = {
                 'number_of_species': len(species),
                 'limit': limit,
-                'name_species': limit_name_species,
-            }
+                'name_species': limit_name_species}
 
             file_contents = self.read_html_template("species.html").render(context=context)
             code = HTTPStatus.OK
@@ -128,7 +127,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             headers = {"Content-Type": "application/json"}
             response = requests.get(url, headers=headers)
             data = response.json()
-            print(data)
             karyotype = data["karyotype"]
 
             context = {"species": species,
@@ -210,7 +208,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             headers = {"Content-Type": "application/json"}
             response = requests.get(url, headers=headers)
             data = response.json()
-            print(data)
 
             start = data[0]["start"]
             end = data[0]["end"]
@@ -218,6 +215,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             chromosome_name = data[0]["seq_region_name"]
             context = {"gene": gene,
                        "start": start,
+                       "end": end,
                        "length": length,
                        "gene_id": gene_id,
                        "chromosome_name": chromosome_name}
@@ -276,8 +274,9 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             chromo = parameters["chromo"][0]
             start = int(parameters["start"][0])
             end = int(parameters["end"][0])
-            url = f"https://rest.ensembl.org/overlap/region/human/{chromo}:{start}-{end}?"
-            headers = {"Content-Type": "application/json;feature=gene;feature=transcript;feature=cds;feature=exon"}
+            url = (f"https://rest.ensembl.org/overlap/region/human/{chromo}:{start}-{end}?"
+                   f"feature=gene;feature=transcript;feature=cds;feature=exon")
+            headers = {"Content-Type": "application/json;"}
             response = requests.get(url, headers=headers)
             data = response.json()
 
