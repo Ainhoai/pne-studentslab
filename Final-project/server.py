@@ -40,16 +40,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         endpoint = parsed_url.path
         parameters = parse_qs(parsed_url.query)
         termcolor.cprint(self.requestline, 'green')
-        code = HTTPStatus.OK
 
         if endpoint == "/":
             file_path = "html/index.html"
-            try:
-                file_contents = Path(file_path).read_text()
-                self.send_response(200)
-            except FileNotFoundError:
-                self.send_error(HTTPStatus.NOT_FOUND, "File Not Found")
-                return
+            file_contents = Path(file_path).read_text()
+            code = 200
 
         elif endpoint == "/listSpecies":
             code, file_contents = self.list_species(parameters)
@@ -74,7 +69,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
         else:
             file_contents = self.read_html_template("error.html")
-            self.send_response(404)
+            code = 404
 
         file_contents = str(file_contents)
         file_contents = file_contents.encode()
@@ -114,7 +109,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             file_contents = self.read_html_template("species.html").render(context=context)
             code = HTTPStatus.OK
 
-        except KeyError:
+        except (KeyError, IndexError):
             file_contents = self.read_html_template("error.html")
             code = HTTPStatus.SERVICE_UNAVAILABLE
 
