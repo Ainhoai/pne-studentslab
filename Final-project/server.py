@@ -79,7 +79,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(file_contents)
 
-    # Placeholder methods for the endpoints
     def list_species(self, parameters):
         try:
             url = f"https://rest.ensembl.org/info/species?"
